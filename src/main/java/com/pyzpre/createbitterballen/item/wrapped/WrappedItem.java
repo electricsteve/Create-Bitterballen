@@ -3,7 +3,6 @@ package com.pyzpre.createbitterballen.item.wrapped;
 import com.pyzpre.createbitterballen.index.ItemRegistry;
 import com.simibubi.create.foundation.item.TooltipHelper;
 import net.createmod.catnip.lang.FontHelper;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -22,12 +21,13 @@ public class WrappedItem extends Item{
         super(properties);
     }
     @Override
-    public int getUseDuration(ItemStack itemstack) {
+    public int getUseDuration(ItemStack itemstack, LivingEntity entity) {
         return 20;
     }
+
     @Override
     public ItemStack finishUsingItem(ItemStack itemstack, Level world, LivingEntity entity) {
-        ItemStack retval = new ItemStack(ItemRegistry.DIRTY_PAPER);
+        ItemStack retval = new ItemStack(ItemRegistry.DIRTY_PAPER.get());
         super.finishUsingItem(itemstack, world, entity);
         if (itemstack.isEmpty()) {
             return retval;
@@ -40,8 +40,8 @@ public class WrappedItem extends Item{
         }
     }
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, world, tooltip, flag);
+    public void appendHoverText(ItemStack itemStack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(itemStack, context, tooltip, flag);
         FontHelper.Palette palette = FontHelper.Palette.STANDARD_CREATE;
         // Add a message prompting the user to hold Shift for more information
         tooltip.add(TooltipHelper.holdShift(FontHelper.Palette.STANDARD_CREATE, true));

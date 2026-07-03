@@ -14,8 +14,9 @@ public class MayoItem extends Item {
         super(p_41383_);
     }
     @Override
-    public void appendHoverText(ItemStack itemstack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(itemstack, world, tooltip, flag);
+    public void appendHoverText(ItemStack itemStack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(itemStack, context, tooltip, flag);
         tooltip.add(Component.literal("§9Resistance (0:10)"));
     }
+
 }

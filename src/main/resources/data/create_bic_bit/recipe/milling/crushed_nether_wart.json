@@ -1,0 +1,14 @@
+{
+  "type": "create:milling",
+  "ingredients": [
+    {
+      "item": "minecraft:nether_wart"
+    }
+  ],
+  "processing_time": 50,
+  "results": [
+    {
+      "id": "create_bic_bit:crushed_nether_wart"
+    }
+  ]
+}

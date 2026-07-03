@@ -68,11 +68,12 @@ public class FryerInstance extends ShaftVisual<MechanicalFryerEntity> implements
 
     @Override
     public void beginFrame(DynamicVisual.Context ctx) {
-        transformModels(ctx.partialTick());
+        float pt = ctx.partialTick();
+        transformModels(pt);
     }
 
     private float getRenderedHeadOffset(float pt) {
-        return fryer.getRenderedHeadOffset(pt); // Ensure this method interpolates properly
+        return fryer.getRenderedHeadOffset(pt);
     }
 
     @Override

@@ -18,9 +18,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegisterEvent;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -169,7 +169,7 @@ public class SoundsRegistry {
         }
 
         public SoundEntryBuilder playExisting(Holder<SoundEvent> event) {
-            return playExisting(event::get, 1, 1);
+            return playExisting(event::value, 1, 1);
         }
 
         public SoundEntry build() {
@@ -280,7 +280,7 @@ public class SoundsRegistry {
             for (int i = 0; i < wrappedEvents.size(); i++) {
                 ConfiguredSoundEvent wrapped = wrappedEvents.get(i);
                 ResourceLocation location = getIdOf(i);
-                RegistryObject<SoundEvent> event = RegistryObject.create(location, ForgeRegistries.SOUND_EVENTS);
+                DeferredHolder<SoundEvent, SoundEvent> event = DeferredHolder.create(Registries.SOUND_EVENT, location);
                 compiledEvents.add(new CompiledSoundEvent(event, wrapped.volume(), wrapped.pitch()));
             }
         }
@@ -293,14 +293,14 @@ public class SoundsRegistry {
             }
         }
 
+
         @Override
         public SoundEvent getMainEvent() {
-            return compiledEvents.get(0)
-                    .event().get();
+            return compiledEvents.getFirst().event().get();
         }
 
         protected ResourceLocation getIdOf(int i) {
-            return new ResourceLocation(id.getNamespace(), i == 0 ? id.getPath() : id.getPath() + "_compounded_" + i);
+            return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), i == 0 ? id.getPath() : id.getPath() + "_compounded_" + i);
         }
 
         @Override
@@ -341,36 +341,48 @@ public class SoundsRegistry {
             }
         }
 
-        private record CompiledSoundEvent(RegistryObject<SoundEvent> event, float volume, float pitch) {
+        private record CompiledSoundEvent(DeferredHolder<SoundEvent, SoundEvent> event, float volume, float pitch) {
         }
 
     }
 
     private static class CustomSoundEntry extends SoundEntry {
 
-        protected List<ResourceLocation> variants;
-        protected RegistryObject<SoundEvent> event;
+        private List<ConfiguredSoundEvent> wrappedEvents;
+        private List<WrappedSoundEntry.CompiledSoundEvent> compiledEvents;
+        private List<ResourceLocation> variants;
+        private DeferredHolder<SoundEvent, SoundEvent> event;
 
-        public CustomSoundEntry(ResourceLocation id, List<ResourceLocation> variants, String subtitle,
-                                SoundSource category, int attenuationDistance) {
+        public CustomSoundEntry(ResourceLocation id, List<ResourceLocation> variants, String subtitle, SoundSource category, int attenuationDistance) {
             super(id, subtitle, category, attenuationDistance);
             this.variants = variants;
         }
 
+        protected ResourceLocation getIdOf(int i) {
+            return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), i == 0 ? id.getPath() : id.getPath() + "_compounded_" + i);
+        }
         @Override
         public void prepare() {
-            event = RegistryObject.create(id, ForgeRegistries.SOUND_EVENTS);
+            for (int i = 0; i < wrappedEvents.size(); i++) {
+            ConfiguredSoundEvent wrapped = wrappedEvents.get(i);
+            ResourceLocation location = getIdOf(i);
+            DeferredHolder<SoundEvent, SoundEvent> event = DeferredHolder.create(Registries.SOUND_EVENT, location);
+            compiledEvents.add(new WrappedSoundEntry.CompiledSoundEvent(event, wrapped.volume(), wrapped.pitch()));
+        }
         }
 
         @Override
         public void register(RegisterEvent.RegisterHelper<SoundEvent> helper) {
-            ResourceLocation location = event.getId();
-            helper.register(location, SoundEvent.createVariableRangeEvent(location));
+            for (WrappedSoundEntry.CompiledSoundEvent compiledEvent : compiledEvents) {
+                ResourceLocation location = compiledEvent.event().getId();
+                helper.register(location, SoundEvent.createVariableRangeEvent(location));
+            }
         }
+
 
         @Override
         public SoundEvent getMainEvent() {
-            return event.get();
+            return compiledEvents.getFirst().event().get();
         }
 
         @Override

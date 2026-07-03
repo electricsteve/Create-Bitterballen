@@ -2,14 +2,20 @@ package com.pyzpre.createbitterballen.block.cheese;
 
 import com.pyzpre.createbitterballen.index.BlockRegistry;
 import com.pyzpre.createbitterballen.index.ItemRegistry;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.PlayerAdvancements;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
@@ -26,8 +32,15 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.extensions.IBlockExtension;
+import org.jetbrains.annotations.Nullable;
 
-public class WaxedUnripeCheeseBlock extends Block {
+import java.util.Optional;
+
+import static com.pyzpre.createbitterballen.block.cheese.YoungCheeseBlock.TOOLS_KNIVES;
+
+public class WaxedUnripeCheeseBlock extends Block implements IBlockExtension {
     public static final IntegerProperty AGE = BlockStateProperties.AGE_1;
     public static final BooleanProperty WAXED = BooleanProperty.create("waxed");
     private static final VoxelShape SHAPE = makeShape();
@@ -43,42 +56,37 @@ public class WaxedUnripeCheeseBlock extends Block {
         return Shapes.box(1 / 16D, 0 / 16D, 1 / 16D, 15 / 16D, 8 / 16D, 15 / 16D);
     }
 
-
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack itemStack = player.getItemInHand(hand);
         Item usedItem = itemStack.getItem();
-
         if (!world.isClientSide) {
             if (usedItem instanceof AxeItem) {
-                if (handleDewaxing(world, pos, state)) {
-                    return InteractionResult.SUCCESS;
+                if (handleDewaxing(world, pos)) {
+                    return ItemInteractionResult.SUCCESS;
                 }
-            } else if (itemStack.is(ItemTags.create(new ResourceLocation("forge", "shears"))) ||
-                    itemStack.is(ItemTags.create(new ResourceLocation("forge", "tools/knives")))) {
+            }  else if (stack.is(Tags.Items.TOOLS_SHEAR) || stack.is(TOOLS_KNIVES)) {
                 if (handleShearing(world, pos, state)) {
+                    player.swing(hand, true);
                     playShearingEffect(world, pos);
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.CONSUME;
                 }
             }
         }
 
-        return super.use(state, world, pos, player, hand, hit);
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
 
-    private boolean handleDewaxing(Level world, BlockPos pos, BlockState state) {
-        if (state.getValue(WAXED)) {
-            BlockState youngCheeseState = BlockRegistry.UNRIPE_CHEESE.get().defaultBlockState()
-                    .setValue(AGE, 0)
-                    .setValue(WAXED, false);
-            world.setBlock(pos, youngCheeseState, 3);
 
-            playWaxOffEffect(world, pos);
+    private boolean handleDewaxing(Level world, BlockPos pos) {
+        BlockState unripeCheeseState = BlockRegistry.UNRIPE_CHEESE.get().defaultBlockState()
+                .setValue(AGE, 0);
+        world.setBlock(pos, unripeCheeseState, 3);
 
-            return true;
-        }
-        return false;
+        playWaxOffEffect(world, pos);
+
+        return true;
     }
     private boolean handleShearing(Level world, BlockPos pos, BlockState state) {
         {
@@ -89,7 +97,7 @@ public class WaxedUnripeCheeseBlock extends Block {
         }
     }
     private void dropCheeseProducts(Level world, BlockPos pos) {
-        ItemStack dropItem = new ItemStack(ItemRegistry.UNRIPE_CHEESE_WEDGE);
+        ItemStack dropItem = new ItemStack(ItemRegistry.UNRIPE_CHEESE_WEDGE.get());
         RandomSource random = world.random;
 
         for (int i = 0; i < 4; i++) {
@@ -116,5 +124,29 @@ public class WaxedUnripeCheeseBlock extends Block {
     protected void createBlockStateDefinition(net.minecraft.world.level.block.state.StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(AGE, WAXED);
     }
+    @Override
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
+        super.setPlacedBy(world, pos, state, entity, stack);
 
+        if (!world.isClientSide && entity instanceof ServerPlayer serverPlayer) {
+            grantAdvancementCriterion(serverPlayer, "create_bic_bit:cheese", "placed_cheese");
+        }
+    }
+
+
+    private static void grantAdvancementCriterion(ServerPlayer player, String advancementID, String criterionKey) {
+        PlayerAdvancements playerAdvancements = player.getAdvancements();
+        ResourceLocation id = ResourceLocation.parse(advancementID);
+
+        Optional<AdvancementHolder> optionalHolder = Optional.ofNullable(player.server.getAdvancements().get(id));
+
+        optionalHolder.ifPresent(holder -> {
+            if (holder.value().criteria().containsKey(criterionKey)) {
+                AdvancementProgress progress = playerAdvancements.getOrStartProgress(holder);
+                if (!progress.isDone()) {
+                    playerAdvancements.award(holder, criterionKey);
+                }
+            }
+        });
+    }
 }

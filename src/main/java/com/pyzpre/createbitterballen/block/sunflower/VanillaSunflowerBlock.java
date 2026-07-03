@@ -15,23 +15,29 @@ public class VanillaSunflowerBlock extends DoublePlantBlock {
         super(properties);
     }
 
-    @Override
-    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
-        // Get the random visual offset for this block
+    private VoxelShape getCustomShape(BlockState state, BlockGetter level, BlockPos pos) {
         Vec3 offset = state.getOffset(level, pos);
-
-        // Get the block half (LOWER or UPPER)
         DoubleBlockHalf half = state.getValue(HALF);
 
-        // Determine the shape based on the block half
-        VoxelShape shape;
-        if (half == DoubleBlockHalf.LOWER) {
-            shape = Shapes.box(5 / 16D, 0 / 16D, 5 / 16D, 11 / 16D, 16 / 16D, 11 / 16D); // Bottom part
-        } else {
-            shape = Shapes.box(5 / 16D, 0 / 16D, 5 / 16D, 11 / 16D, 11 / 16D, 11 / 16D); // Top part
-        }
+        VoxelShape shape = (half == DoubleBlockHalf.LOWER)
+                ? Shapes.box(5 / 16D, 0, 5 / 16D, 11 / 16D, 1, 11 / 16D)
+                : Shapes.box(5 / 16D, 0, 5 / 16D, 11 / 16D, 11 / 16D, 11 / 16D);
 
-        // Apply the random offset
         return shape.move(offset.x, offset.y, offset.z);
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
+        return getCustomShape(state, level, pos);
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
+        return getCustomShape(state, level, pos);
+    }
+
+    @Override
+    public VoxelShape getVisualShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
+        return getCustomShape(state, level, pos);
     }
 }

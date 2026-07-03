@@ -16,13 +16,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 public class EntityEffectHandler {
 
@@ -30,14 +30,11 @@ public class EntityEffectHandler {
     private static boolean isInitialized = false;
 
     @SubscribeEvent
-    public void onLevelTick(TickEvent.LevelTickEvent event) {
-        Level level = event.level;
+    public void onLevelTick(LevelTickEvent.Post event) {
+        Level level = event.getLevel();
 
-        if (!level.isClientSide) {
-
-            // Iterate over all players in the level
+        if (!level.isClientSide()) {
             for (Player player : level.players()) {
-                // Define a dynamic bounding box centered around the player
                 BlockPos playerPos = player.blockPosition();
                 AABB dynamicBounds = new AABB(
                         playerPos.getX() - 16, playerPos.getY() - 16, playerPos.getZ() - 16,
@@ -45,13 +42,16 @@ public class EntityEffectHandler {
                 );
 
                 for (Entity entity : level.getEntities(null, dynamicBounds)) {
-                    if (entity instanceof LivingEntity livingEntity && isInFryingOil(livingEntity, level)) {
-                        applyOilEffect(livingEntity);
+                    if (entity instanceof LivingEntity living && isInFryingOil(living, level)) {
+                        applyOilEffect(living);
                     }
                 }
             }
         }
     }
+
+
+
     private boolean isInFryingOil(LivingEntity entity, Level level) {
         BlockPos pos = entity.blockPosition();
         FluidState fluidState = level.getFluidState(pos);
@@ -64,9 +64,9 @@ public class EntityEffectHandler {
 
     private void applyOilEffect(LivingEntity entity) {
         // Apply the OILED_UP effect to the entity
-        MobEffectInstance oiledup = new MobEffectInstance(EffectRegistry.OILED_UP.get(), 200, 1);
+        MobEffectInstance oiledup = new MobEffectInstance(EffectRegistry.OILED_UP, 200, 1);
 
-        if (!entity.hasEffect(EffectRegistry.OILED_UP.get())) {
+        if (!entity.hasEffect(EffectRegistry.OILED_UP)) {
             entity.addEffect(oiledup);
         }
     }

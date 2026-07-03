@@ -27,7 +27,7 @@ public abstract class FrictionMixin  {
     @Redirect(method = "travel", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/world/level/block/state/BlockState;getFriction(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/Entity;)F"))
     private float redirectGetFriction(BlockState blockState, LevelReader level, BlockPos pos, Entity entity) {
-        if (entity instanceof LivingEntity livingEntity && livingEntity.hasEffect(EffectRegistry.OILED_UP.get())) {
+        if (entity instanceof LivingEntity livingEntity && livingEntity.hasEffect(EffectRegistry.OILED_UP)) {
             // modified friction value
             return 0.99f;
         }

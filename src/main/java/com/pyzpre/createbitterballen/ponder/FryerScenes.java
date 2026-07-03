@@ -3,11 +3,11 @@ package com.pyzpre.createbitterballen.ponder;
 import com.google.common.collect.ImmutableList;
 import com.pyzpre.createbitterballen.block.mechanicalfryer.MechanicalFryerEntity;
 import com.pyzpre.createbitterballen.index.FluidRegistry;
+import com.pyzpre.createbitterballen.index.ItemRegistry;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlock.HeatLevel;
-
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import net.createmod.catnip.data.IntAttached;
 import net.createmod.catnip.math.Pointing;
@@ -15,12 +15,12 @@ import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.ponder.api.scene.SceneBuilder;
 import net.createmod.ponder.api.scene.SceneBuildingUtil;
 import net.createmod.ponder.api.scene.Selection;
-import net.createmod.ponder.foundation.element.InputWindowElement;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import com.pyzpre.createbitterballen.index.ItemRegistry;
 
 
 public class FryerScenes {
@@ -50,8 +50,8 @@ public class FryerScenes {
         Vec3 basinSide = util.vector().blockSurface(basin, Direction.WEST);
 
         ItemStack oil = new ItemStack(FluidRegistry.FRYING_OIL.getBucket().get());
-        ItemStack raw = new ItemStack(ItemRegistry.RAW_BITTERBALLEN);
-        ItemStack fried = new ItemStack(ItemRegistry.BITTERBALLEN);
+        ItemStack raw = new ItemStack(ItemRegistry.RAW_BITTERBALLEN.get());
+        ItemStack fried = new ItemStack(ItemRegistry.BITTERBALLEN.get());
 
         scene.overlay().showText(60)
                 .pointAt(basinSide)
@@ -82,12 +82,30 @@ public class FryerScenes {
         scene.idle(80);
         scene.world().modifyBlockEntityNBT(util.select().position(basin), BasinBlockEntity.class, nbt -> {
             nbt.put("VisualizedItems",
-                    NBTHelper.writeCompoundList(ImmutableList.of(IntAttached.with(1, fried)), ia -> ia.getValue()
-                            .serializeNBT()));
+                    NBTHelper.writeCompoundList(
+                            ImmutableList.of(IntAttached.with(1, fried)),
+                            ia -> ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, ia.getValue())
+                                    .result()
+                                    .filter(t -> t instanceof CompoundTag)
+                                    .map(t -> (CompoundTag) t)
+                                    .orElse(new CompoundTag())
+                    )
+            );
         });
+
         scene.idle(20);
-        scene.world().modifyBlockEntityNBT(fryerSelection, type,
-                nbt -> nbt.put("OutputInventory", ItemStack.EMPTY.serializeNBT()));
+
+        scene.world().modifyBlockEntityNBT(fryerSelection, type, nbt -> {
+            CompoundTag emptyTag = ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, ItemStack.EMPTY)
+                    .result()
+                    .filter(t -> t instanceof CompoundTag)
+                    .map(t -> (CompoundTag) t)
+                    .orElse(new CompoundTag());
+
+            nbt.put("OutputInventory", emptyTag);
+        });
+
+
 
         scene.world().createItemOnBelt(util.grid().at(2, 3, 2), Direction.UP, fried);
         scene.idle(30);

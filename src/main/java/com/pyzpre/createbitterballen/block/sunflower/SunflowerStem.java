@@ -126,7 +126,7 @@ public class SunflowerStem extends DoublePlantBlock implements BonemealableBlock
     }
 
     @Override
-    public boolean isValidBonemealTarget(LevelReader world, BlockPos pos, BlockState state, boolean isClient) {
+    public boolean isValidBonemealTarget(LevelReader world, BlockPos pos, BlockState state) {
         if (state.getValue(HALF) == DoubleBlockHalf.LOWER) {
             return !isMaxAge(state);
         } else {

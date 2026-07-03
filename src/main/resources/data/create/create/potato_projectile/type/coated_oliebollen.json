@@ -13,7 +13,7 @@
   "on_entity_hit": {
     "type": "create:potion_effect",
     "effect": "create_bic_bit:oiled_up",
-    "level": 0,
+    "level": 1,
     "recoverable": false,
     "ticks": 200
   },

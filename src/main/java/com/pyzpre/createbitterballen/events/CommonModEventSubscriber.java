@@ -3,18 +3,24 @@ package com.pyzpre.createbitterballen.events;
 import com.pyzpre.createbitterballen.CreateBitterballen;
 import com.pyzpre.createbitterballen.entity.HerringEntity;
 import com.pyzpre.createbitterballen.index.EntityRegistry;
-import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
-@Mod.EventBusSubscriber(modid = CreateBitterballen.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+
+@EventBusSubscriber(modid = CreateBitterballen.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class CommonModEventSubscriber {
+
     @SubscribeEvent
-    public static void commonSetup(FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> {
-            SpawnPlacements.register(EntityRegistry.HERRING.get(), SpawnPlacements.Type.IN_WATER, Heightmap.Types.WORLD_SURFACE, HerringEntity::canSpawnHere);
-        });
+    public static void onRegisterSpawnPlacements(RegisterSpawnPlacementsEvent event) {
+        event.register(
+                EntityRegistry.HERRING.get(),
+                SpawnPlacementTypes.IN_WATER,
+                Heightmap.Types.WORLD_SURFACE,
+                HerringEntity::canSpawnHere,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
     }
 }

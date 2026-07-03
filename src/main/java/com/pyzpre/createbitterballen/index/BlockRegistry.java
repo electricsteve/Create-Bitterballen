@@ -5,24 +5,22 @@ import com.pyzpre.createbitterballen.block.mechanicalfryer.MechanicalFryer;
 import com.pyzpre.createbitterballen.block.sunflower.SunflowerStem;
 import com.pyzpre.createbitterballen.block.sunflower.VanillaSunflowerBlock;
 import com.simibubi.create.api.stress.BlockStressValues;
-import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.content.processing.AssemblyOperatorBlockItem;
 import com.simibubi.create.foundation.data.BlockStateGen;
 import com.simibubi.create.foundation.data.SharedProperties;
-import com.simibubi.create.infrastructure.config.CStress;
 import com.tterrag.registrate.util.entry.BlockEntry;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.GlassBlock;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import static com.pyzpre.createbitterballen.CreateBitterballen.REGISTRATE;
 import static com.simibubi.create.foundation.data.ModelGen.customItemModel;
@@ -118,8 +116,8 @@ public class BlockRegistry {
                     .register();
 
 
-    public static final BlockEntry<GlassBlock> CRYSTALLISED_OIL =
-            REGISTRATE.block("crystallised_oil", GlassBlock::new)
+    public static final BlockEntry<TransparentBlock> CRYSTALLISED_OIL =
+            REGISTRATE.block("crystallised_oil", TransparentBlock::new)
                     .properties(p -> p.lightLevel(s -> 10))
                     .properties(p -> p.instrument(NoteBlockInstrument.HAT).strength(1F).sound(SoundType.GLASS).noOcclusion().isValidSpawn((state, reader, pos, entity) -> false).isRedstoneConductor((state, world, pos) -> false) .isSuffocating((state, reader, pos) -> false).isViewBlocking((state, reader, pos) -> false))
                     .transform(pickaxeOnly())
@@ -127,16 +125,6 @@ public class BlockRegistry {
                     .build()
                     .lang("Crystallised Oil")
                     .register();
-
-
-    // Creating a DeferredRegister to overwrite vanilla blocks
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, "minecraft");
-
-    // Replacing the vanilla sunflower block with my own
-    public static final RegistryObject<Block> SUNFLOWER = BLOCKS.register("sunflower",
-            () -> new VanillaSunflowerBlock(BlockBehaviour.Properties.copy(Blocks.SUNFLOWER))
-    );
-    public static void register(IEventBus eventBus) {
-        BLOCKS.register(eventBus);
+    public static void register() {
     }
 }

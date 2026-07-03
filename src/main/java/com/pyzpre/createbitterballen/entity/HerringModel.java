@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 public class HerringModel<T extends Entity> extends EntityModel<T> {
     // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "herring"), "main");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath("modid", "herring"), "main");
     private final ModelPart HerringBackBody;
     private final ModelPart HerringBackFins;
     private final ModelPart HerringBodyBack;
@@ -163,12 +163,12 @@ public class HerringModel<T extends Entity> extends EntityModel<T> {
         }
         return value;
     }
-
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        HerringBackBody.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        HerringBackFins.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        HerringBodyBack.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        HerringBody.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int packedColor) {
+        HerringBackBody.render(poseStack, vertexConsumer, packedLight, packedOverlay);
+        HerringBackFins.render(poseStack, vertexConsumer, packedLight, packedOverlay);
+        HerringBodyBack.render(poseStack, vertexConsumer, packedLight, packedOverlay);
+        HerringBody.render(poseStack, vertexConsumer, packedLight, packedOverlay);
     }
+
 }

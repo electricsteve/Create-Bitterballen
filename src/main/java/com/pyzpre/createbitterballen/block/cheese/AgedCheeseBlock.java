@@ -3,22 +3,26 @@ package com.pyzpre.createbitterballen.block.cheese;
 import com.pyzpre.createbitterballen.index.BlockRegistry;
 import com.pyzpre.createbitterballen.index.ItemRegistry;
 import com.simibubi.create.foundation.item.TooltipHelper;
-import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.lang.FontHelper;
-import net.minecraft.ChatFormatting;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -36,13 +40,19 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.extensions.IBlockExtension;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
-public class AgedCheeseBlock extends Block {
+import static com.pyzpre.createbitterballen.block.cheese.YoungCheeseBlock.TOOLS_KNIVES;
+
+public class AgedCheeseBlock extends Block implements IBlockExtension {
     public static final IntegerProperty AGE = BlockStateProperties.AGE_2;
     public static final BooleanProperty WAXED = BooleanProperty.create("waxed");
     private static final VoxelShape SHAPE = makeShape();
@@ -59,50 +69,49 @@ public class AgedCheeseBlock extends Block {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        ItemStack itemStack = player.getItemInHand(hand);
-        Item usedItem = itemStack.getItem();
-
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!world.isClientSide) {
-            if (usedItem == Items.HONEYCOMB) {
-                if (handleWaxing(world, pos, state, player, itemStack)) {
-                    return InteractionResult.SUCCESS;
+            if (stack.is(Items.HONEYCOMB)) {
+                if (handleWaxing(world, pos, state, player, stack)) {
+                    return ItemInteractionResult.CONSUME;
                 }
-            } else if (itemStack.is(ItemTags.create(new ResourceLocation("forge", "shears"))) ||
-                    itemStack.is(ItemTags.create(new ResourceLocation("forge", "tools/knives")))) {
+            }  else if (stack.is(Tags.Items.TOOLS_SHEAR) || stack.is(TOOLS_KNIVES)) {
                 if (handleShearing(world, pos, state)) {
+                    player.swing(hand, true);
                     playShearingEffect(world, pos);
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.CONSUME;
                 }
             }
         }
 
-        return super.use(state, world, pos, player, hand, hit);
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
+
+
+
+
+
 
     private boolean handleWaxing(Level world, BlockPos pos, BlockState state, Player player, ItemStack itemStack) {
-        if (!state.getValue(WAXED)) {
-            world.setBlock(pos, state.setValue(WAXED, true), 3);
-            if (!player.isCreative()) {
-                itemStack.shrink(1);
-            }
-            playWaxOnEffect(world, pos);
-            world.scheduleTick(pos, this, 1);
+        BlockState waxedState = BlockRegistry.WAXED_AGED_CHEESE.get().defaultBlockState()
+                .setValue(WaxedAgedCheeseBlock.AGE, state.getValue(WaxedAgedCheeseBlock.AGE))
+                .setValue(WaxedAgedCheeseBlock.WAXED, true);
 
-            return true;
+        world.setBlock(pos, waxedState, 3);
+
+        if (!player.isCreative()) {
+            itemStack.shrink(1);
         }
-        return false;
+
+        playWaxOnEffect(world, pos);
+        world.scheduleTick(pos, BlockRegistry.WAXED_AGED_CHEESE.get(), 1);
+
+        return true;
     }
-    private void transition(ServerLevel world, BlockPos pos, BlockState state) {
-        BlockState agedCheeseState = BlockRegistry.WAXED_AGED_CHEESE.get().defaultBlockState().setValue(AGE, 2).setValue(WAXED, true);
-        world.setBlockAndUpdate(pos, agedCheeseState);
-    }
+
     @Override
     public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
         super.tick(state, world, pos, random);
-        if (state.getValue(WAXED)) {
-            transition(world, pos, state);
-        }
     }
 
     private boolean handleShearing(Level world, BlockPos pos, BlockState state) {
@@ -135,7 +144,7 @@ public class AgedCheeseBlock extends Block {
         world.playSound(null, pos, SoundEvents.AXE_WAX_OFF, SoundSource.BLOCKS, 1.0F, 1.0F);
     }
     private void dropCheeseProducts(Level world, BlockPos pos, int age) {
-        ItemStack dropItem = (age == 1) ? new ItemStack(ItemRegistry.YOUNG_CHEESE_WEDGE) : new ItemStack(ItemRegistry.AGED_CHEESE_WEDGE);
+        ItemStack dropItem = (age == 1) ? new ItemStack(ItemRegistry.YOUNG_CHEESE_WEDGE.get()) : new ItemStack(ItemRegistry.AGED_CHEESE_WEDGE.get());
         RandomSource random = world.random;
 
         for (int i = 0; i < 4; i++) {
@@ -162,15 +171,15 @@ public class AgedCheeseBlock extends Block {
     }
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, level, tooltip, flag);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, context, tooltip, flag);
         FontHelper.Palette palette = FontHelper.Palette.STANDARD_CREATE;
+
         // Add a "Hold Shift" message for extended tooltip using the new translation method
         tooltip.add(TooltipHelper.holdShift(FontHelper.Palette.STANDARD_CREATE, true));
 
         // Check if the player is holding Shift
         if (Screen.hasShiftDown()) {
-            // Use CreateLang to translate the tooltip correctly
             MutableComponent part1 = Component.translatable("item.create_bic_bit.cheese.tooltip.part1")
                     .withStyle(palette.primary());
             MutableComponent part2 = Component.translatable("item.create_bic_bit.cheese.tooltip.part2")
@@ -178,9 +187,33 @@ public class AgedCheeseBlock extends Block {
             MutableComponent part3 = Component.translatable("item.create_bic_bit.cheese.tooltip.part3")
                     .withStyle(palette.primary());
 
-            // Combine the parts of the detailed tooltip
             tooltip.add(part1.append(part2).append(part3));
         }
     }
 
+    @Override
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
+        super.setPlacedBy(world, pos, state, entity, stack);
+
+        if (!world.isClientSide && entity instanceof ServerPlayer serverPlayer) {
+            grantAdvancementCriterion(serverPlayer, "create_bic_bit:cheese", "placed_cheese");
+        }
+    }
+
+
+    private static void grantAdvancementCriterion(ServerPlayer player, String advancementID, String criterionKey) {
+        PlayerAdvancements playerAdvancements = player.getAdvancements();
+        ResourceLocation id = ResourceLocation.parse(advancementID);
+
+        Optional<AdvancementHolder> optionalHolder = Optional.ofNullable(player.server.getAdvancements().get(id));
+
+        optionalHolder.ifPresent(holder -> {
+            if (holder.value().criteria().containsKey(criterionKey)) {
+                AdvancementProgress progress = playerAdvancements.getOrStartProgress(holder);
+                if (!progress.isDone()) {
+                    playerAdvancements.award(holder, criterionKey);
+                }
+            }
+        });
+    }
 }

@@ -3,6 +3,7 @@ package com.pyzpre.createbitterballen.events;
 import com.pyzpre.createbitterballen.block.sunflower.SunflowerStem;
 import com.pyzpre.createbitterballen.index.BlockRegistry;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -18,8 +19,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+
+import java.util.Optional;
 
 import static net.minecraft.world.level.block.Block.popResource;
 
@@ -72,15 +75,18 @@ public class SunflowerInteractionHandler {
     }
     private static void grantAdvancementCriterion(ServerPlayer player, String advancementID, String criterionKey) {
         PlayerAdvancements playerAdvancements = player.getAdvancements();
-        Advancement advancement = player.server.getAdvancements().getAdvancement(new ResourceLocation(advancementID));
+        ResourceLocation id = ResourceLocation.parse(advancementID);
 
-        if (advancement != null && advancement.getCriteria().containsKey(criterionKey)) {
-            AdvancementProgress advancementProgress = playerAdvancements.getOrStartProgress(advancement);
+        Optional<AdvancementHolder> optionalHolder = Optional.ofNullable(player.server.getAdvancements().get(id));
 
-            if (!advancementProgress.isDone()) {
-                playerAdvancements.award(advancement, criterionKey);
+        optionalHolder.ifPresent(holder -> {
+            if (holder.value().criteria().containsKey(criterionKey)) {
+                AdvancementProgress progress = playerAdvancements.getOrStartProgress(holder);
+                if (!progress.isDone()) {
+                    playerAdvancements.award(holder, criterionKey);
+                }
             }
-        }
+        });
     }
 
     private static void dropSunflowerHead(Level world, BlockPos pos, Player player) {

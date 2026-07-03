@@ -19,19 +19,19 @@ public class WrappedKetchupItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemstack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(itemstack, world, tooltip, flag);
+    public void appendHoverText(ItemStack itemStack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(itemStack, context, tooltip, flag);
         tooltip.add(Component.literal("§9Fire Resistance (0:10)"));
     }
 
     @Override
-    public int getUseDuration(@Nonnull ItemStack itemstack) {
+    public int getUseDuration(ItemStack itemstack, LivingEntity entity) {
         return 20;
     }
 
     @Override
     public ItemStack finishUsingItem(ItemStack itemstack, Level world, LivingEntity entity) {
-        ItemStack retval = new ItemStack(ItemRegistry.DIRTY_PAPER);
+        ItemStack retval = new ItemStack(ItemRegistry.DIRTY_PAPER.get());
         super.finishUsingItem(itemstack, world, entity);
         if (itemstack.isEmpty()) {
             return retval;

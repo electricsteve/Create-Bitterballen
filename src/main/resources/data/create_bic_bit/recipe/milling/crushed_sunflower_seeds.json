@@ -1,0 +1,14 @@
+{
+  "type": "create:milling",
+  "ingredients": [
+    {
+      "item": "create_bic_bit:sunflower_seeds"
+    }
+  ],
+  "processing_time": 50,
+  "results": [
+    {
+      "id": "create_bic_bit:crushed_sunflower_seeds"
+    }
+  ]
+}

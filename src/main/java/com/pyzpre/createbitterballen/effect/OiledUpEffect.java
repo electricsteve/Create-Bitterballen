@@ -1,6 +1,7 @@
 package com.pyzpre.createbitterballen.effect;
 
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.PlayerAdvancements;
@@ -16,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.Optional;
 import java.util.Random;
 
 
@@ -27,12 +29,9 @@ public class OiledUpEffect extends MobEffect {
     public OiledUpEffect(MobEffectCategory mobEffectCategory, int color) {
         super(mobEffectCategory, color);
     }
+
     @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
-        return true;
-    }
-    @Override
-    public void applyEffectTick(LivingEntity entity, int amplifier) {
+    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         Level world = entity.getCommandSenderWorld();
 
         // Level 0: Sliding + Floating in Water
@@ -49,6 +48,7 @@ public class OiledUpEffect extends MobEffect {
                 applyLevitationEffect(entity);
             }
         }
+        return true;
     }
 
 
@@ -84,16 +84,21 @@ public class OiledUpEffect extends MobEffect {
     }
     private void grantAdvancementCriterion(ServerPlayer player, String advancementID, String criterionKey) {
         PlayerAdvancements playerAdvancements = player.getAdvancements();
-        Advancement advancement = player.server.getAdvancements().getAdvancement(new ResourceLocation(advancementID));
+        ResourceLocation id = ResourceLocation.parse(advancementID);
 
-        if (advancement != null && advancement.getCriteria().containsKey(criterionKey)) {
-            AdvancementProgress advancementProgress = playerAdvancements.getOrStartProgress(advancement);
+        Optional<AdvancementHolder> optionalHolder = Optional.ofNullable(player.server.getAdvancements().get(id));
 
-            if (!advancementProgress.isDone()) {
-                playerAdvancements.award(advancement, criterionKey);
+        optionalHolder.ifPresent(holder -> {
+            if (holder.value().criteria().containsKey(criterionKey)) {
+                AdvancementProgress progress = playerAdvancements.getOrStartProgress(holder);
+                if (!progress.isDone()) {
+                    playerAdvancements.award(holder, criterionKey);
+                }
             }
-        }
+        });
     }
+
+
 
 
     private void maybeFallOffLadder(LivingEntity entity) {
@@ -109,6 +114,17 @@ public class OiledUpEffect extends MobEffect {
             entity.setDeltaMovement(entity.getDeltaMovement().add(pushVector));
         }
     }
+    @Override
+    public boolean shouldApplyEffectTickThisTick(int tickCount, int amplifier) {
+        return true;
+    }
 
+    @Override
+    public void onEffectAdded(LivingEntity entity, int amplifier) {
+        super.onEffectAdded(entity, amplifier);
+    }
+    @Override
+    public void onEffectStarted(LivingEntity entity, int amplifier) {
+    }
 
 }

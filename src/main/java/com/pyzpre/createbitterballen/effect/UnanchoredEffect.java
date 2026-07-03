@@ -14,16 +14,16 @@ import java.util.Random;
 
 public class UnanchoredEffect extends MobEffect {
 
-        private static final Random RANDOM = new Random();
-        private static final int MIN_COOLDOWN = 80;
-        private int cooldown = MIN_COOLDOWN;
+    private static final Random RANDOM = new Random();
+    private static final int MIN_COOLDOWN = 80;
+    private int cooldown = MIN_COOLDOWN;
 
-        public UnanchoredEffect(MobEffectCategory mobEffectCategory, int color) {
-            super(mobEffectCategory, color);
-        }
+    public UnanchoredEffect(MobEffectCategory mobEffectCategory, int color) {
+        super(mobEffectCategory, color);
+    }
 
     @Override
-    public void applyEffectTick(LivingEntity entity, int amplifier) {
+    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         if (!entity.level().isClientSide) {
             if (--cooldown <= 0) {
                 if (RANDOM.nextInt(100) < 20) {
@@ -47,6 +47,7 @@ public class UnanchoredEffect extends MobEffect {
                 }
             }
         }
+        return true;
     }
 
     private void spawnParticles(Level world, BlockPos pos) {
@@ -63,7 +64,18 @@ public class UnanchoredEffect extends MobEffect {
             }
         }
     }
+    @Override
+    public boolean shouldApplyEffectTickThisTick(int tickCount, int amplifier) {
+        return true;
+    }
 
+    @Override
+    public void onEffectAdded(LivingEntity entity, int amplifier) {
+        super.onEffectAdded(entity, amplifier);
+    }
+    @Override
+    public void onEffectStarted(LivingEntity entity, int amplifier) {
+    }
     private boolean isTeleportDestinationSafe(LivingEntity entity, double x, double y, double z) {
         var destinationPos = new BlockPos((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
         var belowDestinationPos = destinationPos.below();
@@ -75,11 +87,6 @@ public class UnanchoredEffect extends MobEffect {
 
         return isDestinationBlockSafe && isBelowDestinationSolid;
     }
+}
 
-
-    @Override
-        public boolean isDurationEffectTick(int duration, int amplifier) {
-            return true;
-        }
-    }
 

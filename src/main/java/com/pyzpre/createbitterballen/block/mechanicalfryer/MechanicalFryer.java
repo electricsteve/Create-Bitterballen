@@ -5,9 +5,7 @@ import com.pyzpre.createbitterballen.index.BlockEntityRegistry;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllShapes;
-import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
-import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,15 +13,16 @@ import net.minecraft.core.Direction.Axis;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -33,28 +32,31 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
-public class MechanicalFryer extends HorizontalKineticBlock implements IBE<MechanicalFryerEntity>{
+import net.neoforged.neoforge.common.extensions.IBlockExtension;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+
+public class MechanicalFryer extends HorizontalKineticBlock implements IBE<MechanicalFryerEntity>, IBlockExtension {
     public MechanicalFryer(Properties properties) {
         super(properties);
     }
 
+
     @Override
-    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
         ItemStack itemInHand = player.getItemInHand(handIn);
         // Check client-side
-        if (AllItems.WRENCH.isIn(itemInHand)) {
-            UseOnContext context = new UseOnContext(player, handIn, hit);
-            return onWrenched(state, context);
-        }
+//        if (AllItems.WRENCH.isIn(itemInHand)) {
+//            UseOnContext context = new UseOnContext(player, handIn, hit);
+//            return onWrenched(state, context);
+//        }
         if (worldIn.isClientSide) {
-            return InteractionResult.SUCCESS; // Only execute server-side logic
+            return ItemInteractionResult.SUCCESS; // Only execute server-side logic
         }
 
         BlockEntity be = worldIn.getBlockEntity(pos);
         if (!(be instanceof MechanicalFryerEntity fryer)) {
-            return InteractionResult.FAIL;
+            return ItemInteractionResult.FAIL;
         }
 
         if (!itemInHand.isEmpty()) {
@@ -68,7 +70,6 @@ public class MechanicalFryer extends HorizontalKineticBlock implements IBE<Mecha
                         SoundType soundType = blockItem.getBlock().getSoundType(blockItem.getBlock().defaultBlockState(), worldIn, pos, player);
                         worldIn.playSound(null, pos, soundType.getPlaceSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
                     }
-                    return result; // Return the result of the block placement
                 }
             }
 
@@ -83,7 +84,7 @@ public class MechanicalFryer extends HorizontalKineticBlock implements IBE<Mecha
                     player.setItemInHand(handIn, ItemStack.EMPTY); // Empty the player's hand
                     fryer.setChanged(); // Mark the entity as changed
                     fryer.sendData(); // Send updated data to the client
-                    return InteractionResult.CONSUME;
+                    return ItemInteractionResult.CONSUME;
                 }
             }
         } else {
@@ -111,7 +112,7 @@ public class MechanicalFryer extends HorizontalKineticBlock implements IBE<Mecha
             fryer.sendData();
         }
 
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.SUCCESS;
     }
 
     @Override
@@ -160,7 +161,7 @@ public class MechanicalFryer extends HorizontalKineticBlock implements IBE<Mecha
     }
 
     @Override
-    public boolean isPathfindable(BlockState state, BlockGetter reader, BlockPos pos, PathComputationType type) {
+    protected boolean isPathfindable(BlockState state, PathComputationType pathComputationType) {
         return false;
     }
 

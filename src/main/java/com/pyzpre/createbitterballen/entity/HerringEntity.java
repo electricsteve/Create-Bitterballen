@@ -17,7 +17,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 import javax.annotation.Nonnull;
 
@@ -33,7 +34,7 @@ public class HerringEntity extends AbstractSchoolingFish {
                 .add(Attributes.MAX_HEALTH, 3.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.6)
                 .add(Attributes.FOLLOW_RANGE, 16.0)
-                .add(ForgeMod.SWIM_SPEED.get(), 1.0);
+                .add(NeoForgeMod.SWIM_SPEED.getDelegate(), 1.0);
     }
 
     public HerringEntity(EntityType<? extends AbstractSchoolingFish> entityType, Level world) {
@@ -87,14 +88,6 @@ public class HerringEntity extends AbstractSchoolingFish {
         return SoundEvents.SALMON_HURT;
     }
 
-    @Override
-    @Nonnull
-    public EntityDimensions getDimensions(@Nonnull Pose pose) {
-        // Adjust width and height to desired hitbox size
-        float width = 0.65F;
-        float height = 0.4F;
-        return EntityDimensions.scalable(width, height);
-    }
     @Override
     public void setPos(double x, double y, double z) {
         super.setPos(x, y, z);

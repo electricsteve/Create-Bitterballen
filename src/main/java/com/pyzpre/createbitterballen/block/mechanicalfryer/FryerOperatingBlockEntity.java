@@ -8,6 +8,8 @@ import com.simibubi.create.foundation.recipe.RecipeFinder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -86,7 +88,7 @@ public abstract class FryerOperatingBlockEntity extends KineticBlockEntity {
     public void startProcessingBasin() {}
 
 
-    protected <C extends Container> boolean matchFryingRecipe(Recipe<C> recipe) {
+    protected <C extends RecipeInput> boolean matchFryingRecipe(Recipe<C> recipe) {
 
         if (recipe == null) {
             return false;
@@ -112,21 +114,21 @@ public abstract class FryerOperatingBlockEntity extends KineticBlockEntity {
 
     protected List<Recipe<?>> getMatchingRecipes() {
 
-
         Optional<BasinBlockEntity> basinOptional = getBasin();
         if (basinOptional.map(BasinBlockEntity::isEmpty).orElse(true)) {
             return new ArrayList<>();
         }
 
+        List<RecipeHolder<? extends Recipe<?>>> holders =
+                RecipeFinder.get(getRecipeCacheKey(), level, this::matchStaticFilters);
 
-        List<Recipe<?>> list = RecipeFinder.get(getRecipeCacheKey(), level, this::matchStaticFilters);
-
-
-        return list.stream()
+        return holders.stream()
+                .map(RecipeHolder::value)
                 .filter(this::matchFryingRecipe)
                 .sorted((r1, r2) -> r2.getIngredients().size() - r1.getIngredients().size())
                 .collect(Collectors.toList());
     }
+
 
 
     protected abstract void onBasinRemoved();
@@ -140,7 +142,8 @@ public abstract class FryerOperatingBlockEntity extends KineticBlockEntity {
         return Optional.of((BasinBlockEntity) basinBE);
     }
 
-    protected abstract <C extends Container> boolean matchStaticFilters(Recipe<C> recipe);
+    protected abstract boolean matchStaticFilters(RecipeHolder<? extends Recipe<?>> holder);
+
 
     protected abstract Object getRecipeCacheKey();
 }

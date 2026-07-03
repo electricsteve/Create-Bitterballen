@@ -17,8 +17,8 @@ public class FryingOilBottleItem extends Item {
         super(p_i48487_1_);
     }
     @Override
-    public void appendHoverText(ItemStack itemstack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(itemstack, world, tooltip, flag);
+    public void appendHoverText(ItemStack itemStack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(itemStack, context, tooltip, flag);
         tooltip.add(Component.literal("§cPoison (0:10)"));
         tooltip.add(Component.literal("§cOiled Up (1:00)"));
     }
@@ -38,7 +38,7 @@ public class FryingOilBottleItem extends Item {
         }
     }
 
-    public int getUseDuration(ItemStack p_77626_1_) {
+    public int getUseDuration(ItemStack itemstack, LivingEntity entity) {
         return 42;
     }
 
