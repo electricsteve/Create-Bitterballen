@@ -57,9 +57,8 @@ public class EntityEffectHandler {
         FluidState fluidState = level.getFluidState(pos);
 
         Fluid fluid = fluidState.getType();
-        boolean isFryingOil = fluid.isSame(FluidRegistry.FRYING_OIL.get());
 
-        return isFryingOil;
+        return fluid.isSame(FluidRegistry.FRYING_OIL.get());
     }
 
     private void applyOilEffect(LivingEntity entity) {
