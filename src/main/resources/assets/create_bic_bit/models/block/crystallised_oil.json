@@ -2,6 +2,5 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "create_bic_bit:block/crystallised_oil"
-  },
-  "render_type": "translucent"
+  }
 }
