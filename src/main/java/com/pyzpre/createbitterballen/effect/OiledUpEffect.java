@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -60,7 +61,7 @@ public class OiledUpEffect extends MobEffect {
             ItemStack itemStack = player.getMainHandItem();
             if (!itemStack.isEmpty()) {
                 player.drop(itemStack, false, false);  // Drop the item immediately
-                player.setItemInHand(player.getUsedItemHand(), ItemStack.EMPTY);  // Empty the hand
+                player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);  // Empty the hand
             }
         }
     }
