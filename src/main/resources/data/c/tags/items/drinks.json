@@ -1,0 +1,8 @@
+{
+    "replace": false,
+    "values": [
+        "create_bic_bit:ketchup_bottle",
+        "create_bic_bit:mayonnaise_bottle",
+        "create_bic_bit:frying_oil_bottle"
+    ]
+}
