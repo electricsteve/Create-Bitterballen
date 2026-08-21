@@ -7,7 +7,7 @@
 		"3": "create_bic_bit:block/mechanicalfryer/head",
 		"6": "create:block/waterwheel_metal",
 		"mechanical_press_pole": "create:block/mechanical_press_pole",
-		"particle": "block/pasted"
+		"particle": "create_bic_bit:block/mechanicalfryer/casing"
 	},
 	"elements": [
 		{
