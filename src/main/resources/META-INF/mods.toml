@@ -4,7 +4,7 @@ license="MIT License"
 
 [[mods]]
 modId="create_bic_bit"
-version="1.0.2B"
+version="1.0.4"
 displayName="Create Bitterballen"
 displayURL="https://github.com/pyzpre/Create-Bicycles-Bitterballen"
 logoFile="logo.png"
@@ -14,7 +14,7 @@ description="G E K O L O N I S E E R D"
 [[dependencies.create_bic_bit]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.20.1,1.21]"
+    versionRange="[1.20.1,1.21)"
     ordering="NONE"
     side="BOTH"
 
