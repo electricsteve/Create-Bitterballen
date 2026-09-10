@@ -3,7 +3,7 @@
   "heatRequirement": "heated",
   "ingredients": [
     {
-      "item": "create:dough"
+      "tag": "c:dough"
     },
     {
       "amount": 10125,
@@ -12,7 +12,6 @@
   ],
   "results": [
     {
-
       "item": "create_bic_bit:oliebollen"
     }
   ]

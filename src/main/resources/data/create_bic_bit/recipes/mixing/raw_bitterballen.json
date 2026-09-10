@@ -1,12 +1,13 @@
 {
   "type": "create:mixing",
   "ingredients": [
-    {
-      "tag": "c:raw_meat"
-    },
+    [
+      {
+        "tag": "create_bic_bit:raw_meat_delight"
+      }
+    ],
     {
       "item": "create:wheat_flour"
-
     },
     {
       "amount": 10125,
