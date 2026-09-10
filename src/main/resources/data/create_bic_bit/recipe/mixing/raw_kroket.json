@@ -12,16 +12,15 @@
             "item": "create:wheat_flour"
 
         },
-    {
-        "type": "fluid_stack",
-        "amount": 250,
-        "fluid": "minecraft:milk"
-    }
+        {
+            "type": "fluid_stack",
+            "amount": 250,
+            "fluid": "minecraft:milk"
+        }
     ],
     "results": [
-    {
-
-        "id": "create_bic_bit:raw_kroket"
-    }
+        {
+            "id": "create_bic_bit:raw_kroket"
+        }
     ]
 }

@@ -2,7 +2,7 @@
   "type": "create:filling",
   "ingredients": [
     {
-      "tag": "c:dough"
+      "tag": "c:foods/dough/wheat"
     },
     {
       "type": "fluid_tag",
