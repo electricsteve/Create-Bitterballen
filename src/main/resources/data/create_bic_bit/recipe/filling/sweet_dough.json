@@ -2,7 +2,7 @@
   "type": "create:filling",
   "ingredients": [
     {
-      "item": "create:dough"
+      "tag": "c:dough"
     },
     {
       "type": "fluid_tag",

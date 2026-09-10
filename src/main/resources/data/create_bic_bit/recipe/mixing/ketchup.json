@@ -9,10 +9,10 @@
       "item": "create_bic_bit:crushed_nether_wart"
     },
     {
-      "item": "minecraft:beetroot"
+      "tag": "create_bic_bit:ketchup_ingredient"
     },
     {
-      "item": "minecraft:beetroot"
+      "tag": "create_bic_bit:ketchup_ingredient"
     },
     {
       "type": "fluid_stack",
