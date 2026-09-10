@@ -101,7 +101,6 @@ repositories {
         content {
             includeGroup "curse.maven"
         }
-
     }
 }
 dependencies {
@@ -118,6 +117,8 @@ dependencies {
     compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}"))
     compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}"))
     runtimeOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}"))
+
+    runtimeOnly(fg.deobf("curse.maven:farmers-delight-398521:8765179")) // Farmer's delight
 
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 

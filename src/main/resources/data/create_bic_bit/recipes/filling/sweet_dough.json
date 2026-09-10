@@ -2,7 +2,7 @@
   "type": "create:filling",
   "ingredients": [
     {
-      "item": "create:dough"
+      "tag": "forge:dough"
     },
     {
       "amount": 125,

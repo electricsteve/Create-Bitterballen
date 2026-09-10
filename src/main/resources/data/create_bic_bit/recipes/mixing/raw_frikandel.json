@@ -1,8 +1,8 @@
 {
   "type": "create:mixing",
   "ingredients": [
-   {
-      "tag": "forge:raw_meat"
+    {
+      "tag": "create_bic_bit:raw_meat_delight"
     },
     {
       "item": "create:wheat_flour"
