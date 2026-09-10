@@ -7,7 +7,7 @@ version = project.mod_version
 group = project.maven_group
 
 base {
-	archivesName = project.archives_base_name
+	archivesName = "create_bitterballen+${minecraft_version}-fabric"
 }
 
 repositories {
@@ -117,7 +117,7 @@ jar {
 publishing {
 	publications {
 		create("mavenJava", MavenPublication) {
-			artifactId = project.archives_base_name
+			artifactId = project.base.archivesName
 			from components.java
 		}
 	}
