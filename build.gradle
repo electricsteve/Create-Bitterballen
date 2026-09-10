@@ -22,9 +22,9 @@ apply plugin: 'org.spongepowered.mixin'
 jarJar.enable()
 
 
-version = '1.0.2B'
+version = '1.0.4'
 group = 'com.pyzpre.Create-Bicycles-Bitterballen'
-archivesBaseName = 'createbicbit-1.20.1'
+archivesBaseName = "create_bitterballen+${minecraft_version}"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
