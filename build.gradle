@@ -134,6 +134,7 @@ dependencies {
 
 //    localRuntime "maven.modrinth:fRiHVvU7:5sIPA1To" // EMI
     localRuntime "maven.modrinth:R2OftAxM:XTVZDOol" // Farmer's Delight
+    localRuntime "maven.modrinth:2MgfuPip:6gXB1Kcv" // Tag tooltips
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
