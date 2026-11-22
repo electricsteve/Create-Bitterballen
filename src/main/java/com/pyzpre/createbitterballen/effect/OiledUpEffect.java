@@ -1,6 +1,5 @@
 package com.pyzpre.createbitterballen.effect;
 
-import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.resources.ResourceLocation;
@@ -21,7 +20,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.Optional;
 import java.util.Random;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class OiledUpEffect extends MobEffect {
     private static final Random random = new Random();
     private static final double DROP_ITEM_CHANCE = 0.01;
@@ -57,14 +58,14 @@ public class OiledUpEffect extends MobEffect {
         double baseDivisor = 2.0;
         double adjustedDropChance = DROP_ITEM_CHANCE / (baseDivisor + Math.sqrt(amplifier + 1));
         if (!player.level().isClientSide) {
-        if (random.nextDouble() < adjustedDropChance) {
-            ItemStack itemStack = player.getMainHandItem();
-            if (!itemStack.isEmpty()) {
-                player.drop(itemStack, false, false);  // Drop the item immediately
-                player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);  // Empty the hand
+            if (random.nextDouble() < adjustedDropChance) {
+                ItemStack itemStack = player.getMainHandItem();
+                if (!itemStack.isEmpty()) {
+                    player.drop(itemStack, false, false);  // Drop the item immediately
+                    player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);  // Empty the hand
+                }
             }
         }
-    }
     }
 
     private void maybeFloatInWater(LivingEntity entity) {
@@ -74,6 +75,7 @@ public class OiledUpEffect extends MobEffect {
             entity.setDeltaMovement(entity.getDeltaMovement().add(0, upwardForce, 0));
         }
     }
+
     private void applyLevitationEffect(LivingEntity entity) {
         MobEffectInstance levitation = new MobEffectInstance(MobEffects.LEVITATION, 20, 0);
         entity.addEffect(levitation);
@@ -83,6 +85,8 @@ public class OiledUpEffect extends MobEffect {
             grantAdvancementCriterion(serverPlayer, "create_bic_bit:step_3", "got_levitation");
         }
     }
+
+    @SuppressWarnings("SameParameterValue")
     private void grantAdvancementCriterion(ServerPlayer player, String advancementID, String criterionKey) {
         PlayerAdvancements playerAdvancements = player.getAdvancements();
         ResourceLocation id = ResourceLocation.parse(advancementID);
@@ -100,12 +104,10 @@ public class OiledUpEffect extends MobEffect {
     }
 
 
-
-
     private void maybeFallOffLadder(LivingEntity entity) {
         // Check if the block at the entity's feet or the block they are moving into is a ladder
         boolean isOnLadder = entity.level().getBlockState(entity.blockPosition()).is(BlockTags.CLIMBABLE) ||
-                entity.level().getBlockState(entity.blockPosition().above()).is(BlockTags.CLIMBABLE);
+            entity.level().getBlockState(entity.blockPosition().above()).is(BlockTags.CLIMBABLE);
 
         if (isOnLadder && random.nextDouble() < FALL_OFF_LADDER_CHANCE) {
             // Get the entity's facing direction
@@ -115,6 +117,7 @@ public class OiledUpEffect extends MobEffect {
             entity.setDeltaMovement(entity.getDeltaMovement().add(pushVector));
         }
     }
+
     @Override
     public boolean shouldApplyEffectTickThisTick(int tickCount, int amplifier) {
         return true;
@@ -124,6 +127,7 @@ public class OiledUpEffect extends MobEffect {
     public void onEffectAdded(LivingEntity entity, int amplifier) {
         super.onEffectAdded(entity, amplifier);
     }
+
     @Override
     public void onEffectStarted(LivingEntity entity, int amplifier) {
     }

@@ -1,5 +1,6 @@
 package com.pyzpre.createbitterballen.item;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,12 +11,15 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class BottleItem extends Item {
 
-    public BottleItem(Properties p_i48487_1_) {
-        super(p_i48487_1_);
+    public BottleItem(Properties properties) {
+        super(properties);
     }
-
 
     @Override
     public ItemStack finishUsingItem(ItemStack itemstack, Level world, LivingEntity entity) {
@@ -32,16 +36,19 @@ public class BottleItem extends Item {
         }
     }
 
-    public int getUseDuration(ItemStack p_77626_1_) {
+    @Override
+    public int getUseDuration(ItemStack itemStack, LivingEntity entity) {
         return 42;
     }
 
-    public UseAnim getUseAnimation(ItemStack p_77661_1_) {
+    @Override
+    public UseAnim getUseAnimation(ItemStack itemStack) {
         return UseAnim.DRINK;
     }
 
-    public InteractionResultHolder<ItemStack> use(Level p_77659_1_, Player p_77659_2_, InteractionHand p_77659_3_) {
-        p_77659_2_.startUsingItem(p_77659_3_);
-        return InteractionResultHolder.success(p_77659_2_.getItemInHand(p_77659_3_));
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        player.startUsingItem(hand);
+        return InteractionResultHolder.success(player.getItemInHand(hand));
     }
 }

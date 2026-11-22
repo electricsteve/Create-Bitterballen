@@ -1,5 +1,6 @@
 package com.pyzpre.createbitterballen.block.sunflower;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -24,7 +25,10 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class SunflowerStem extends DoublePlantBlock implements BonemealableBlock {
     public static final IntegerProperty AGE = BlockStateProperties.AGE_3;
 
@@ -37,16 +41,19 @@ public class SunflowerStem extends DoublePlantBlock implements BonemealableBlock
         builder.add(AGE);
         super.createBlockStateDefinition(builder);
     }
+
     @Override
     @Nullable
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState().setValue(HALF, DoubleBlockHalf.LOWER);
     }
+
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         world.setBlock(pos, this.defaultBlockState().setValue(HALF, DoubleBlockHalf.LOWER), 3);
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean isMaxAge(BlockState state) {
         return state.getValue(AGE) >= 3;
     }
@@ -55,6 +62,7 @@ public class SunflowerStem extends DoublePlantBlock implements BonemealableBlock
     public boolean isRandomlyTicking(BlockState state) {
         return state.getValue(HALF) == DoubleBlockHalf.LOWER && !this.isMaxAge(state);
     }
+
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
         Vec3 offset = state.getOffset(level, pos); // Get the random offset
@@ -93,7 +101,6 @@ public class SunflowerStem extends DoublePlantBlock implements BonemealableBlock
     public static VoxelShape makeShape() {
         return Shapes.box(5 / 16D, 0 / 16D, 5 / 16D, 11 / 16D, 16 / 16D, 11 / 16D);
     }
-
 
 
     @Override

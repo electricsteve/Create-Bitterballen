@@ -1,5 +1,6 @@
 package com.pyzpre.createbitterballen.block.sunflower;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.DoublePlantBlock;
@@ -10,6 +11,10 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class VanillaSunflowerBlock extends DoublePlantBlock {
     public VanillaSunflowerBlock(Properties properties) {
         super(properties);
@@ -20,8 +25,8 @@ public class VanillaSunflowerBlock extends DoublePlantBlock {
         DoubleBlockHalf half = state.getValue(HALF);
 
         VoxelShape shape = (half == DoubleBlockHalf.LOWER)
-                ? Shapes.box(5 / 16D, 0, 5 / 16D, 11 / 16D, 1, 11 / 16D)
-                : Shapes.box(5 / 16D, 0, 5 / 16D, 11 / 16D, 11 / 16D, 11 / 16D);
+            ? Shapes.box(5 / 16D, 0, 5 / 16D, 11 / 16D, 1, 11 / 16D)
+            : Shapes.box(5 / 16D, 0, 5 / 16D, 11 / 16D, 11 / 16D, 11 / 16D);
 
         return shape.move(offset.x, offset.y, offset.z);
     }

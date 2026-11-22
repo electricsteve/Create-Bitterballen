@@ -1,7 +1,11 @@
 package com.pyzpre.createbitterballen.block.cheese;
 
+import static com.pyzpre.createbitterballen.block.cheese.YoungCheeseBlock.TOOLS_KNIVES;
+
 import com.pyzpre.createbitterballen.index.BlockRegistry;
 import com.pyzpre.createbitterballen.index.ItemRegistry;
+
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
@@ -10,10 +14,8 @@ import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -21,7 +23,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -35,24 +36,30 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.extensions.IBlockExtension;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-import static com.pyzpre.createbitterballen.block.cheese.YoungCheeseBlock.TOOLS_KNIVES;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class WaxedAgedCheeseBlock extends Block implements IBlockExtension {
     public static final IntegerProperty AGE = BlockStateProperties.AGE_2;
     public static final BooleanProperty WAXED = BooleanProperty.create("waxed");
     private static final VoxelShape SHAPE = makeShape();
+
     public WaxedAgedCheeseBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(AGE, 2).setValue(WAXED, true));
     }
+
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
         return SHAPE;
     }
+
     public static VoxelShape makeShape() {
         return Shapes.box(1 / 16D, 0 / 16D, 1 / 16D, 15 / 16D, 8 / 16D, 15 / 16D);
     }
@@ -66,7 +73,7 @@ public class WaxedAgedCheeseBlock extends Block implements IBlockExtension {
                 if (handleDewaxing(world, pos)) {
                     return ItemInteractionResult.SUCCESS;
                 }
-            }  else if (stack.is(Tags.Items.TOOLS_SHEAR) || stack.is(TOOLS_KNIVES)) {
+            } else if (stack.is(Tags.Items.TOOLS_SHEAR) || stack.is(TOOLS_KNIVES)) {
                 if (handleShearing(world, pos, state)) {
                     player.swing(hand, true);
                     playShearingEffect(world, pos);
@@ -79,13 +86,13 @@ public class WaxedAgedCheeseBlock extends Block implements IBlockExtension {
     }
 
     private boolean handleDewaxing(Level world, BlockPos pos) {
-            BlockState agedCheeseState = BlockRegistry.AGED_CHEESE.get().defaultBlockState()
-                    .setValue(AGE, 2);
-            world.setBlock(pos, agedCheeseState, 3);
+        BlockState agedCheeseState = BlockRegistry.AGED_CHEESE.get().defaultBlockState()
+            .setValue(AGE, 2);
+        world.setBlock(pos, agedCheeseState, 3);
 
-            playWaxOffEffect(world, pos);
+        playWaxOffEffect(world, pos);
 
-            return true;
+        return true;
     }
 
     private boolean handleShearing(Level world, BlockPos pos, BlockState state) {
@@ -102,6 +109,7 @@ public class WaxedAgedCheeseBlock extends Block implements IBlockExtension {
     private void playWaxOffEffect(Level world, BlockPos pos) {
         world.playSound(null, pos, SoundEvents.AXE_WAX_OFF, SoundSource.BLOCKS, 1.0F, 1.0F);
     }
+
     private void dropCheeseProducts(Level world, BlockPos pos, int age) {
         ItemStack dropItem = (age == 1) ? new ItemStack(ItemRegistry.YOUNG_CHEESE_WEDGE.get()) : new ItemStack(ItemRegistry.AGED_CHEESE_WEDGE.get());
         RandomSource random = world.random;
@@ -127,6 +135,7 @@ public class WaxedAgedCheeseBlock extends Block implements IBlockExtension {
     protected void createBlockStateDefinition(net.minecraft.world.level.block.state.StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(AGE, WAXED);
     }
+
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entity, stack);
@@ -137,6 +146,7 @@ public class WaxedAgedCheeseBlock extends Block implements IBlockExtension {
     }
 
 
+    @SuppressWarnings("SameParameterValue")
     private static void grantAdvancementCriterion(ServerPlayer player, String advancementID, String criterionKey) {
         PlayerAdvancements playerAdvancements = player.getAdvancements();
         ResourceLocation id = ResourceLocation.parse(advancementID);

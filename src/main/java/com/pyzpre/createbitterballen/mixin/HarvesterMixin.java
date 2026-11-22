@@ -4,6 +4,7 @@ import com.pyzpre.createbitterballen.block.sunflower.SunflowerStem;
 import com.pyzpre.createbitterballen.index.BlockRegistry;
 import com.simibubi.create.content.contraptions.actors.harvester.HarvesterMovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -17,7 +18,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -26,12 +29,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class HarvesterMixin {
 
     @Inject(
-            method = "visitNewPosition",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lcom/simibubi/create/content/contraptions/actors/harvester/HarvesterMovementBehaviour;isValidCrop(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z"
-            ),
-            cancellable = true
+        method = "visitNewPosition",
+        at = @At(
+            value = "INVOKE",
+            target = "Lcom/simibubi/create/content/contraptions/actors/harvester/HarvesterMovementBehaviour;isValidCrop(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z"
+        ),
+        cancellable = true
     )
     private void onVisitNewPosition(MovementContext context, BlockPos pos, CallbackInfo ci) {
         if (context == null) {
@@ -46,18 +49,19 @@ public abstract class HarvesterMixin {
         BlockState stateVisited = world.getBlockState(pos);
 
         if (stateVisited.is(Blocks.SUNFLOWER)) {
-            handleHarvesterInteraction(world, pos, context, stateVisited);
+            bitterballen$handleHarvesterInteraction(world, pos, context, stateVisited);
             ci.cancel();
         }
     }
 
-    private void handleHarvesterInteraction(Level world, BlockPos pos, MovementContext context, BlockState state) {
+    @Unique
+    private void bitterballen$handleHarvesterInteraction(Level world, BlockPos pos, MovementContext context, BlockState state) {
         ItemStack sunflowerHead = new ItemStack(Items.SUNFLOWER);
 
         IItemHandler internalStorage = null;
         if (context != null
-                && context.contraption != null
-                && context.contraption.getStorage() != null) {
+            && context.contraption != null
+            && context.contraption.getStorage() != null) {
             internalStorage = context.contraption.getStorage().getMountedItems();
         }
 
@@ -70,12 +74,13 @@ public abstract class HarvesterMixin {
             Block.popResource(world, pos, sunflowerHead);
         }
 
-        replaceWithSunflowerStem(world, pos, state);
+        bitterballen$replaceWithSunflowerStem(world, pos, state);
 
         world.playSound(null, pos, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, 1.0F);
     }
 
-    private void replaceWithSunflowerStem(Level world, BlockPos pos, BlockState state) {
+    @Unique
+    private void bitterballen$replaceWithSunflowerStem(Level world, BlockPos pos, BlockState state) {
         if (!state.hasProperty(DoublePlantBlock.HALF)) {
             return;
         }
@@ -88,12 +93,12 @@ public abstract class HarvesterMixin {
         world.setBlock(upperPos, Blocks.AIR.defaultBlockState(), 18);
 
         BlockState lowerStemState = BlockRegistry.SUNFLOWERSTEM.get().defaultBlockState()
-                .setValue(SunflowerStem.AGE, 2)
-                .setValue(DoublePlantBlock.HALF, DoubleBlockHalf.LOWER);
+            .setValue(SunflowerStem.AGE, 2)
+            .setValue(DoublePlantBlock.HALF, DoubleBlockHalf.LOWER);
 
         BlockState upperStemState = BlockRegistry.SUNFLOWERSTEM.get().defaultBlockState()
-                .setValue(SunflowerStem.AGE, 2)
-                .setValue(DoublePlantBlock.HALF, DoubleBlockHalf.UPPER);
+            .setValue(SunflowerStem.AGE, 2)
+            .setValue(DoublePlantBlock.HALF, DoubleBlockHalf.UPPER);
 
         world.setBlock(lowerPos, lowerStemState, 3);
         world.setBlock(upperPos, upperStemState, 3);

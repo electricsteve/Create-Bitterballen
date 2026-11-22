@@ -1,9 +1,13 @@
 package com.pyzpre.createbitterballen.block.cheese;
 
+import static com.pyzpre.createbitterballen.block.cheese.YoungCheeseBlock.TOOLS_KNIVES;
+
 import com.pyzpre.createbitterballen.index.BlockRegistry;
 import com.pyzpre.createbitterballen.index.ItemRegistry;
 import com.simibubi.create.foundation.item.TooltipHelper;
+
 import net.createmod.catnip.lang.FontHelper;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.gui.screens.Screen;
@@ -17,10 +21,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -44,25 +46,31 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.extensions.IBlockExtension;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 
-import static com.pyzpre.createbitterballen.block.cheese.YoungCheeseBlock.TOOLS_KNIVES;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class UnripeCheeseBlock extends Block implements IBlockExtension {
     public static final IntegerProperty AGE = BlockStateProperties.AGE_1;
     public static final BooleanProperty WAXED = BooleanProperty.create("waxed");
     private static final VoxelShape SHAPE = makeShape();
+
     public UnripeCheeseBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(AGE, 0).setValue(WAXED, false));
     }
+
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
         return SHAPE;
     }
+
     public static VoxelShape makeShape() {
         return Shapes.box(1 / 16D, 0 / 16D, 1 / 16D, 15 / 16D, 8 / 16D, 15 / 16D);
     }
@@ -85,6 +93,7 @@ public class UnripeCheeseBlock extends Block implements IBlockExtension {
             world.setBlock(pos, youngCheeseState, 3);
         }
     }
+
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!world.isClientSide) {
@@ -92,8 +101,8 @@ public class UnripeCheeseBlock extends Block implements IBlockExtension {
                 if (handleWaxing(world, pos, state, player, stack)) {
                     return ItemInteractionResult.CONSUME;
                 }
-            }  else if (stack.is(Tags.Items.TOOLS_SHEAR) || stack.is(TOOLS_KNIVES)) {
-                if (handleShearing(world, pos, state)) {
+            } else if (stack.is(Tags.Items.TOOLS_SHEAR) || stack.is(TOOLS_KNIVES)) {
+                if (handleShearing(world, pos)) {
                     player.swing(hand, true);
                     playShearingEffect(world, pos);
                     return ItemInteractionResult.CONSUME;
@@ -107,8 +116,8 @@ public class UnripeCheeseBlock extends Block implements IBlockExtension {
 
     private boolean handleWaxing(Level world, BlockPos pos, BlockState state, Player player, ItemStack itemStack) {
         BlockState waxedState = BlockRegistry.WAXED_UNRIPE_CHEESE.get().defaultBlockState()
-                .setValue(WaxedUnripeCheeseBlock.AGE, state.getValue(UnripeCheeseBlock.AGE))
-                .setValue(WaxedUnripeCheeseBlock.WAXED, true);
+            .setValue(WaxedUnripeCheeseBlock.AGE, state.getValue(UnripeCheeseBlock.AGE))
+            .setValue(WaxedUnripeCheeseBlock.WAXED, true);
 
         world.setBlock(pos, waxedState, 3);
 
@@ -127,20 +136,18 @@ public class UnripeCheeseBlock extends Block implements IBlockExtension {
     public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
         super.tick(state, world, pos, random);
     }
-    private boolean handleShearing(Level world, BlockPos pos, BlockState state) {
-        {
-            dropCheeseProducts(world, pos);
-            world.removeBlock(pos, false);
-            playShearingEffect(world, pos);
-            return true;
-        }
+
+    private boolean handleShearing(Level world, BlockPos pos) {
+        dropCheeseProducts(world, pos);
+        world.removeBlock(pos, false);
+        playShearingEffect(world, pos);
+        return true;
     }
 
     private void playWaxOnEffect(Level world, BlockPos pos) {
         world.playSound(null, pos, SoundEvents.HONEYCOMB_WAX_ON, SoundSource.BLOCKS, 1.0F, 1.0F);
 
-        if (world instanceof ServerLevel) {
-            ServerLevel serverWorld = (ServerLevel) world;
+        if (world instanceof ServerLevel serverWorld) {
             for (int i = 0; i < 20; i++) {
                 double d0 = serverWorld.random.nextGaussian() * 0.1D;
                 double d1 = serverWorld.random.nextGaussian() * 0.1D;
@@ -152,6 +159,7 @@ public class UnripeCheeseBlock extends Block implements IBlockExtension {
             }
         }
     }
+
     private void dropCheeseProducts(Level world, BlockPos pos) {
         ItemStack dropItem = new ItemStack(ItemRegistry.UNRIPE_CHEESE_WEDGE.get());
         RandomSource random = world.random;
@@ -194,15 +202,16 @@ public class UnripeCheeseBlock extends Block implements IBlockExtension {
         // Check if the player is holding Shift
         if (Screen.hasShiftDown()) {
             MutableComponent part1 = Component.translatable("item.create_bic_bit.cheese.tooltip.part1")
-                    .withStyle(palette.primary());
+                .withStyle(palette.primary());
             MutableComponent part2 = Component.translatable("item.create_bic_bit.cheese.tooltip.part2")
-                    .withStyle(palette.highlight());
+                .withStyle(palette.highlight());
             MutableComponent part3 = Component.translatable("item.create_bic_bit.cheese.tooltip.part3")
-                    .withStyle(palette.primary());
+                .withStyle(palette.primary());
 
             tooltip.add(part1.append(part2).append(part3));
         }
     }
+
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entity, stack);
@@ -213,6 +222,7 @@ public class UnripeCheeseBlock extends Block implements IBlockExtension {
     }
 
 
+    @SuppressWarnings("SameParameterValue")
     private static void grantAdvancementCriterion(ServerPlayer player, String advancementID, String criterionKey) {
         PlayerAdvancements playerAdvancements = player.getAdvancements();
         ResourceLocation id = ResourceLocation.parse(advancementID);

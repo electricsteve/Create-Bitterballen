@@ -1,10 +1,11 @@
 package com.pyzpre.createbitterballen.block.cheese;
 
-import com.pyzpre.createbitterballen.CreateBitterballen;
 import com.pyzpre.createbitterballen.index.BlockRegistry;
 import com.pyzpre.createbitterballen.index.ItemRegistry;
 import com.simibubi.create.foundation.item.TooltipHelper;
+
 import net.createmod.catnip.lang.FontHelper;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.gui.screens.Screen;
@@ -22,7 +23,6 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -46,24 +46,33 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.extensions.IBlockExtension;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class YoungCheeseBlock extends Block implements IBlockExtension {
     public static final IntegerProperty AGE = BlockStateProperties.AGE_2;
     public static final BooleanProperty WAXED = BooleanProperty.create("waxed");
     private static final VoxelShape SHAPE = makeShape();
+    @SuppressWarnings("DataFlowIssue")
     public static final TagKey<Item> TOOLS_KNIVES = ItemTags.create(ResourceLocation.tryParse("c:tools/knife"));
+
     public YoungCheeseBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(AGE, 1).setValue(WAXED, false));
     }
+
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
         return SHAPE;
     }
+
     public static VoxelShape makeShape() {
         return Shapes.box(1 / 16D, 0 / 16D, 1 / 16D, 15 / 16D, 8 / 16D, 15 / 16D);
     }
@@ -108,11 +117,10 @@ public class YoungCheeseBlock extends Block implements IBlockExtension {
     }
 
 
-
     private boolean handleWaxing(Level world, BlockPos pos, BlockState state, Player player, ItemStack itemStack) {
         BlockState waxedState = BlockRegistry.WAXED_YOUNG_CHEESE.get().defaultBlockState()
-                .setValue(WaxedYoungCheeseBlock.AGE, state.getValue(YoungCheeseBlock.AGE))
-                .setValue(WaxedYoungCheeseBlock.WAXED, true);
+            .setValue(WaxedYoungCheeseBlock.AGE, state.getValue(YoungCheeseBlock.AGE))
+            .setValue(WaxedYoungCheeseBlock.WAXED, true);
 
         world.setBlock(pos, waxedState, 3);
 
@@ -125,10 +133,12 @@ public class YoungCheeseBlock extends Block implements IBlockExtension {
 
         return true;
     }
+
     @Override
     public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
         super.tick(state, world, pos, random);
     }
+
     private boolean handleShearing(Level world, BlockPos pos, BlockState state) {
         if (!state.hasProperty(AGE)) {
             return false;
@@ -147,8 +157,7 @@ public class YoungCheeseBlock extends Block implements IBlockExtension {
         world.playSound(null, pos, SoundEvents.HONEYCOMB_WAX_ON, SoundSource.BLOCKS, 1.0F, 1.0F);
 
 
-        if (world instanceof ServerLevel) {
-            ServerLevel serverWorld = (ServerLevel) world;
+        if (world instanceof ServerLevel serverWorld) {
             for (int i = 0; i < 20; i++) {
                 double d0 = serverWorld.random.nextGaussian() * 0.1D;
                 double d1 = serverWorld.random.nextGaussian() * 0.1D;
@@ -160,6 +169,7 @@ public class YoungCheeseBlock extends Block implements IBlockExtension {
             }
         }
     }
+
     private void dropCheeseProducts(Level world, BlockPos pos, int age) {
         ItemStack dropItem = (age == 1) ? new ItemStack(ItemRegistry.YOUNG_CHEESE_WEDGE.get()) : new ItemStack(ItemRegistry.AGED_CHEESE_WEDGE.get());
         RandomSource random = world.random;
@@ -203,11 +213,11 @@ public class YoungCheeseBlock extends Block implements IBlockExtension {
         // Check if the player is holding Shift
         if (Screen.hasShiftDown()) {
             MutableComponent part1 = Component.translatable("item.create_bic_bit.cheese.tooltip.part1")
-                    .withStyle(palette.primary());
+                .withStyle(palette.primary());
             MutableComponent part2 = Component.translatable("item.create_bic_bit.cheese.tooltip.part2")
-                    .withStyle(palette.highlight());
+                .withStyle(palette.highlight());
             MutableComponent part3 = Component.translatable("item.create_bic_bit.cheese.tooltip.part3")
-                    .withStyle(palette.primary());
+                .withStyle(palette.primary());
 
             tooltip.add(part1.append(part2).append(part3));
         }
@@ -223,6 +233,7 @@ public class YoungCheeseBlock extends Block implements IBlockExtension {
     }
 
 
+    @SuppressWarnings("SameParameterValue")
     private static void grantAdvancementCriterion(ServerPlayer player, String advancementID, String criterionKey) {
         PlayerAdvancements playerAdvancements = player.getAdvancements();
         ResourceLocation id = ResourceLocation.parse(advancementID);

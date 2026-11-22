@@ -3,6 +3,7 @@ package com.pyzpre.createbitterballen.events;
 import com.pyzpre.createbitterballen.index.BlockRegistry;
 import com.pyzpre.createbitterballen.index.EffectRegistry;
 import com.pyzpre.createbitterballen.index.FluidRegistry;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -20,15 +21,9 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 public class EntityEffectHandler {
-
-    private static final Logger LOGGER = LogManager.getLogger();
-    private static boolean isInitialized = false;
-
     @SubscribeEvent
     public void onLevelTick(LevelTickEvent.Post event) {
         Level level = event.getLevel();
@@ -37,8 +32,8 @@ public class EntityEffectHandler {
             for (Player player : level.players()) {
                 BlockPos playerPos = player.blockPosition();
                 AABB dynamicBounds = new AABB(
-                        playerPos.getX() - 16, playerPos.getY() - 16, playerPos.getZ() - 16,
-                        playerPos.getX() + 16, playerPos.getY() + 16, playerPos.getZ() + 16
+                    playerPos.getX() - 16, playerPos.getY() - 16, playerPos.getZ() - 16,
+                    playerPos.getX() + 16, playerPos.getY() + 16, playerPos.getZ() + 16
                 );
 
                 for (Entity entity : level.getEntities(null, dynamicBounds)) {
@@ -49,7 +44,6 @@ public class EntityEffectHandler {
             }
         }
     }
-
 
 
     private boolean isInFryingOil(LivingEntity entity, Level level) {
@@ -69,6 +63,7 @@ public class EntityEffectHandler {
             entity.addEffect(oiledup);
         }
     }
+
     @SubscribeEvent
     public void onEntityJoinLevel(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof Chicken chicken) {
@@ -93,7 +88,7 @@ public class EntityEffectHandler {
                         chicken.setInLove(player);
                         player.swing(event.getHand(), true);
                         Level level = player.level();
-                        level.broadcastEntityEvent(chicken, (byte)18);
+                        level.broadcastEntityEvent(chicken, (byte) 18);
                         event.setCanceled(true);
                     }
                 }

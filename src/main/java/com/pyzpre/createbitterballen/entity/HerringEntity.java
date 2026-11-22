@@ -1,12 +1,15 @@
 package com.pyzpre.createbitterballen.entity;
 
 import com.pyzpre.createbitterballen.index.ItemRegistry;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FollowFlockLeaderGoal;
@@ -17,11 +20,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class HerringEntity extends AbstractSchoolingFish {
 
     private boolean isSwimming = false;
@@ -29,12 +33,13 @@ public class HerringEntity extends AbstractSchoolingFish {
     public int getMaxSchoolSize() {
         return 5;
     }
+
     public static AttributeSupplier.Builder createAttributes() {
         return LivingEntity.createLivingAttributes()
-                .add(Attributes.MAX_HEALTH, 3.0)
-                .add(Attributes.MOVEMENT_SPEED, 0.6)
-                .add(Attributes.FOLLOW_RANGE, 16.0)
-                .add(NeoForgeMod.SWIM_SPEED.getDelegate(), 1.0);
+            .add(Attributes.MAX_HEALTH, 3.0)
+            .add(Attributes.MOVEMENT_SPEED, 0.6)
+            .add(Attributes.FOLLOW_RANGE, 16.0)
+            .add(NeoForgeMod.SWIM_SPEED.getDelegate(), 1.0);
     }
 
     public HerringEntity(EntityType<? extends AbstractSchoolingFish> entityType, Level world) {
@@ -42,7 +47,6 @@ public class HerringEntity extends AbstractSchoolingFish {
 
         this.refreshDimensions(); // Forces recalculation of hitbox size
     }
-
 
 
     @Override
@@ -84,7 +88,7 @@ public class HerringEntity extends AbstractSchoolingFish {
     }
 
     @Override
-    protected SoundEvent getHurtSound(@Nonnull DamageSource damageSource) {
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
         return SoundEvents.SALMON_HURT;
     }
 
@@ -109,12 +113,9 @@ public class HerringEntity extends AbstractSchoolingFish {
         super.tick();
 
         // Check if the herring is in water and has any meaningful movement
-        if (this.isInWater() && this.getDeltaMovement().lengthSqr() > 0.0001) {
-            this.isSwimming = true;
-        } else {
-            this.isSwimming = false;
-        }
+        this.isSwimming = this.isInWater() && this.getDeltaMovement().lengthSqr() > 0.0001;
     }
+
     @Override
     public void stopFollowing() {
         if (this.isFollower()) {
@@ -122,8 +123,6 @@ public class HerringEntity extends AbstractSchoolingFish {
             super.stopFollowing(); // This calls the superclass method to nullify the leader
         }
     }
-
-
 
 
     public boolean isSwimming() {

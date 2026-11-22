@@ -1,8 +1,10 @@
 package com.pyzpre.createbitterballen.events;
 
+import static net.minecraft.world.level.block.Block.popResource;
+
 import com.pyzpre.createbitterballen.block.sunflower.SunflowerStem;
 import com.pyzpre.createbitterballen.index.BlockRegistry;
-import net.minecraft.advancements.Advancement;
+
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
@@ -24,11 +26,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.Optional;
 
-import static net.minecraft.world.level.block.Block.popResource;
-
 public class SunflowerInteractionHandler {
-
-
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         BlockPos pos = event.getPos();
@@ -58,21 +56,22 @@ public class SunflowerInteractionHandler {
             world.setBlock(pos, BlockRegistry.SUNFLOWERSTEM.get().defaultBlockState().setValue(SunflowerStem.AGE, 2), 3);
 
             world.setBlock(
-                    pos.above(),
-                    BlockRegistry.SUNFLOWERSTEM.get().defaultBlockState()
-                            .setValue(SunflowerStem.HALF, DoubleBlockHalf.UPPER)
-                            .setValue(SunflowerStem.AGE, 2),
-                    3
+                pos.above(),
+                BlockRegistry.SUNFLOWERSTEM.get().defaultBlockState()
+                    .setValue(SunflowerStem.HALF, DoubleBlockHalf.UPPER)
+                    .setValue(SunflowerStem.AGE, 2),
+                3
             );
 
             world.playSound(null, pos, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, 1.0F);
-            if (player instanceof ServerPlayer) {
-                ServerPlayer serverPlayer = (ServerPlayer) player;
+            if (player instanceof ServerPlayer serverPlayer) {
                 grantAdvancementCriterion(serverPlayer, "create_bic_bit:lawn_defender", "harvested_sunflower");
             }
             event.setCanceled(true);
         }
     }
+
+    @SuppressWarnings("SameParameterValue")
     private static void grantAdvancementCriterion(ServerPlayer player, String advancementID, String criterionKey) {
         PlayerAdvancements playerAdvancements = player.getAdvancements();
         ResourceLocation id = ResourceLocation.parse(advancementID);

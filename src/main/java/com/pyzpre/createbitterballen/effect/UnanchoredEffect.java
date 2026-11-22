@@ -12,6 +12,9 @@ import net.minecraft.world.level.Level;
 
 import java.util.Random;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
 public class UnanchoredEffect extends MobEffect {
 
     private static final Random RANDOM = new Random();
@@ -51,8 +54,7 @@ public class UnanchoredEffect extends MobEffect {
     }
 
     private void spawnParticles(Level world, BlockPos pos) {
-        if (world instanceof ServerLevel) {
-            ServerLevel serverWorld = (ServerLevel) world;
+        if (world instanceof ServerLevel serverWorld) {
             for (int i = 0; i < 20; i++) {
                 double d0 = serverWorld.random.nextGaussian() * 0.02D;
                 double d1 = serverWorld.random.nextGaussian() * 0.02D;
@@ -64,6 +66,7 @@ public class UnanchoredEffect extends MobEffect {
             }
         }
     }
+
     @Override
     public boolean shouldApplyEffectTickThisTick(int tickCount, int amplifier) {
         return true;
@@ -73,9 +76,11 @@ public class UnanchoredEffect extends MobEffect {
     public void onEffectAdded(LivingEntity entity, int amplifier) {
         super.onEffectAdded(entity, amplifier);
     }
+
     @Override
     public void onEffectStarted(LivingEntity entity, int amplifier) {
     }
+
     private boolean isTeleportDestinationSafe(LivingEntity entity, double x, double y, double z) {
         var destinationPos = new BlockPos((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
         var belowDestinationPos = destinationPos.below();

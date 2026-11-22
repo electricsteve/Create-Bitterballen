@@ -1,10 +1,15 @@
 
 package com.pyzpre.createbitterballen.item;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class RoastedSunflowerSeedsItem extends Item {
 	public RoastedSunflowerSeedsItem(Properties properties) {
 		super(properties);

@@ -1,13 +1,15 @@
 package com.pyzpre.createbitterballen.block.mechanicalfryer;
 
 
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.pyzpre.createbitterballen.index.PartialsRegistry;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.ShaftRenderer;
-import dev.engine_room.flywheel.api.visualization.VisualizationManager;
+
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
 import net.minecraft.client.Minecraft;
@@ -20,18 +22,22 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+
 import org.jetbrains.annotations.NotNull;
 
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
+import dev.engine_room.flywheel.api.visualization.VisualizationManager;
+
 public class MechanicalFryerRenderer extends ShaftRenderer<MechanicalFryerEntity> {
 
     public MechanicalFryerRenderer(BlockEntityRendererProvider.Context context) {
         super(context);
     }
+
     @Override
     public boolean shouldRenderOffScreen(@NotNull MechanicalFryerEntity fryerEntity) {
         return true;
     }
+
     @Override
     protected void renderSafe(MechanicalFryerEntity fryerEntity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int light, int overlay) {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
@@ -93,18 +99,18 @@ public class MechanicalFryerRenderer extends ShaftRenderer<MechanicalFryerEntity
 
 
         SuperByteBuffer poleRender = CachedBuffers.partialFacing(AllPartialModels.MECHANICAL_MIXER_POLE, blockState,
-                blockState.getValue(HORIZONTAL_FACING));
+            blockState.getValue(HORIZONTAL_FACING));
         poleRender.translate(0, -renderedHeadOffset, 0)
-                .light(light)
-                .renderInto(poseStack, vb);
+            .light(light)
+            .renderInto(poseStack, vb);
 
         // Render the mixer head
         VertexConsumer vbCutout = bufferSource.getBuffer(RenderType.cutoutMipped());
         SuperByteBuffer headRender = CachedBuffers.partialFacing(PartialsRegistry.MECHANICAL_FRYER_HEAD, blockState,
-                blockState.getValue(HORIZONTAL_FACING));
+            blockState.getValue(HORIZONTAL_FACING));
         headRender.translate(0, -renderedHeadOffset, 0)
-                .light(light)
-                .renderInto(poseStack, vbCutout);
+            .light(light)
+            .renderInto(poseStack, vbCutout);
     }
 
 

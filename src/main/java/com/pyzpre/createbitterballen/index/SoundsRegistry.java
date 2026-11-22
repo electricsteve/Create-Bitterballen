@@ -3,6 +3,8 @@ package com.pyzpre.createbitterballen.index;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.pyzpre.createbitterballen.CreateBitterballen;
+
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.Registries;
@@ -19,7 +21,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.nio.file.Path;
@@ -31,18 +32,18 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+// TODO: what is this...
 public class SoundsRegistry {
     public static final Map<ResourceLocation, SoundEntry> ALL = new HashMap<>();
 
-    public static final SoundEntry
+    public static final SoundEntry FRYING = create("frying").subtitle("Frying noises")
+        .playExisting(SoundEvents.WEATHER_RAIN, .125f, 1.6f)
+        .category(SoundSource.BLOCKS)
+        .build();
 
-
-
-            FRYING = create("frying").subtitle("Frying noises")
-            .playExisting(SoundEvents.WEATHER_RAIN, .125f, 1.6f)
-            .category(SoundSource.BLOCKS)
-            .build();
-    private static SoundEntryBuilder create(String name) {
+    private static SoundEntryBuilder create(@SuppressWarnings("SameParameterValue") String name) {
         return create(CreateBitterballen.asResource(name));
     }
 
@@ -74,10 +75,13 @@ public class SoundsRegistry {
 
     public static void playItemPickup(Player player) {
         player.level().playSound(null, player.blockPosition(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, .2f,
-                1f + CreateBitterballen.RANDOM.nextFloat());
-    }private static class SoundEntryProvider implements DataProvider {
+            1f + CreateBitterballen.RANDOM.nextFloat());
+    }
 
-        private PackOutput output;
+    @ParametersAreNonnullByDefault
+    @MethodsReturnNonnullByDefault
+    public static class SoundEntryProvider implements DataProvider {
+        private final PackOutput output;
 
         public SoundEntryProvider(DataGenerator generator) {
             output = generator.getPackOutput();
@@ -97,22 +101,20 @@ public class SoundsRegistry {
             path = path.resolve("assets/create_bic_bit");
             JsonObject json = new JsonObject();
             ALL.entrySet()
-                    .stream()
-                    .sorted(Map.Entry.comparingByKey())
-                    .forEach(entry -> {
-                        entry.getValue()
-                                .write(json);
-                    });
+                .stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> {
+                    entry.getValue()
+                        .write(json);
+                });
             return DataProvider.saveStable(cache, json, path.resolve("sounds.json"));
         }
-
     }
 
     public record ConfiguredSoundEvent(Supplier<SoundEvent> event, float volume, float pitch) {
     }
 
     public static class SoundEntryBuilder {
-
         protected ResourceLocation id;
         protected String subtitle = "unregistered";
         protected SoundSource category = SoundSource.BLOCKS;
@@ -174,16 +176,14 @@ public class SoundsRegistry {
 
         public SoundEntry build() {
             SoundEntry entry =
-                    wrappedEvents.isEmpty() ? new CustomSoundEntry(id, variants, subtitle, category, attenuationDistance)
-                            : new WrappedSoundEntry(id, subtitle, wrappedEvents, category, attenuationDistance);
+                wrappedEvents.isEmpty() ? new CustomSoundEntry(id, variants, subtitle, category, attenuationDistance)
+                    : new WrappedSoundEntry(id, subtitle, wrappedEvents, category, attenuationDistance);
             ALL.put(entry.getId(), entry);
             return entry;
         }
-
     }
 
     public static abstract class SoundEntry {
-
         protected ResourceLocation id;
         protected String subtitle;
         protected SoundSource category;
@@ -265,8 +265,8 @@ public class SoundsRegistry {
 
     private static class WrappedSoundEntry extends SoundEntry {
 
-        private List<ConfiguredSoundEvent> wrappedEvents;
-        private List<CompiledSoundEvent> compiledEvents;
+        private final List<ConfiguredSoundEvent> wrappedEvents;
+        private final List<CompiledSoundEvent> compiledEvents;
 
         public WrappedSoundEntry(ResourceLocation id, String subtitle,
                                  List<ConfiguredSoundEvent> wrappedEvents, SoundSource category, int attenuationDistance) {
@@ -311,9 +311,9 @@ public class SoundsRegistry {
                 JsonArray list = new JsonArray();
                 JsonObject s = new JsonObject();
                 s.addProperty("name", event.event()
-                        .get()
-                        .getLocation()
-                        .toString());
+                    .get()
+                    .getLocation()
+                    .toString());
                 s.addProperty("type", "event");
                 if (attenuationDistance != 0)
                     s.addProperty("attenuation_distance", attenuationDistance);
@@ -329,7 +329,7 @@ public class SoundsRegistry {
         public void play(Level world, Player entity, double x, double y, double z, float volume, float pitch) {
             for (CompiledSoundEvent event : compiledEvents) {
                 world.playSound(entity, x, y, z, event.event().get(), category, event.volume() * volume,
-                        event.pitch() * pitch);
+                    event.pitch() * pitch);
             }
         }
 
@@ -337,7 +337,7 @@ public class SoundsRegistry {
         public void playAt(Level world, double x, double y, double z, float volume, float pitch, boolean fade) {
             for (CompiledSoundEvent event : compiledEvents) {
                 world.playLocalSound(x, y, z, event.event().get(), category, event.volume() * volume,
-                        event.pitch() * pitch, fade);
+                    event.pitch() * pitch, fade);
             }
         }
 
@@ -348,9 +348,9 @@ public class SoundsRegistry {
 
     private static class CustomSoundEntry extends SoundEntry {
 
-        private List<ConfiguredSoundEvent> wrappedEvents;
+        private final List<ConfiguredSoundEvent> wrappedEvents = List.of();
         private List<WrappedSoundEntry.CompiledSoundEvent> compiledEvents;
-        private List<ResourceLocation> variants;
+        private final List<ResourceLocation> variants;
         private DeferredHolder<SoundEvent, SoundEvent> event;
 
         public CustomSoundEntry(ResourceLocation id, List<ResourceLocation> variants, String subtitle, SoundSource category, int attenuationDistance) {
@@ -361,14 +361,15 @@ public class SoundsRegistry {
         protected ResourceLocation getIdOf(int i) {
             return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), i == 0 ? id.getPath() : id.getPath() + "_compounded_" + i);
         }
+
         @Override
         public void prepare() {
             for (int i = 0; i < wrappedEvents.size(); i++) {
-            ConfiguredSoundEvent wrapped = wrappedEvents.get(i);
-            ResourceLocation location = getIdOf(i);
-            DeferredHolder<SoundEvent, SoundEvent> event = DeferredHolder.create(Registries.SOUND_EVENT, location);
-            compiledEvents.add(new WrappedSoundEntry.CompiledSoundEvent(event, wrapped.volume(), wrapped.pitch()));
-        }
+                ConfiguredSoundEvent wrapped = wrappedEvents.get(i);
+                ResourceLocation location = getIdOf(i);
+                DeferredHolder<SoundEvent, SoundEvent> event = DeferredHolder.create(Registries.SOUND_EVENT, location);
+                compiledEvents.add(new WrappedSoundEntry.CompiledSoundEvent(event, wrapped.volume(), wrapped.pitch()));
+            }
         }
 
         @Override

@@ -5,8 +5,8 @@ import com.simibubi.create.content.processing.basin.BasinBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.simple.DeferralBehaviour;
 import com.simibubi.create.foundation.recipe.RecipeFinder;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.Container;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeInput;
@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
 public abstract class FryerOperatingBlockEntity extends KineticBlockEntity {
 
     public DeferralBehaviour basinChecker;
@@ -30,6 +29,7 @@ public abstract class FryerOperatingBlockEntity extends KineticBlockEntity {
     public FryerOperatingBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
     }
+
     public void sendData() {
         if (level == null || level.isClientSide) {
             return;
@@ -42,7 +42,6 @@ public abstract class FryerOperatingBlockEntity extends KineticBlockEntity {
         // Send the block entity data to the client
         level.getChunkAt(worldPosition).setBlockEntity(this);
     }
-
 
 
     @Override
@@ -71,13 +70,13 @@ public abstract class FryerOperatingBlockEntity extends KineticBlockEntity {
             return true;
         Optional<BasinBlockEntity> basin = getBasin();
         if (basin.filter(BasinBlockEntity::canContinueProcessing)
-                .isEmpty())
+            .isEmpty())
             return true;
 
         List<Recipe<?>> recipes = getMatchingRecipes();
         if (recipes.isEmpty())
             return true;
-        currentRecipe = recipes.get(0);
+        currentRecipe = recipes.getFirst();
         startProcessingBasin();
         sendData();
         return true;
@@ -85,7 +84,8 @@ public abstract class FryerOperatingBlockEntity extends KineticBlockEntity {
 
     protected abstract boolean isRunning();
 
-    public void startProcessingBasin() {}
+    public void startProcessingBasin() {
+    }
 
 
     protected <C extends RecipeInput> boolean matchFryingRecipe(Recipe<C> recipe) {
@@ -109,9 +109,6 @@ public abstract class FryerOperatingBlockEntity extends KineticBlockEntity {
     }
 
 
-
-
-
     protected List<Recipe<?>> getMatchingRecipes() {
 
         Optional<BasinBlockEntity> basinOptional = getBasin();
@@ -120,16 +117,14 @@ public abstract class FryerOperatingBlockEntity extends KineticBlockEntity {
         }
 
         List<RecipeHolder<? extends Recipe<?>>> holders =
-                RecipeFinder.get(getRecipeCacheKey(), level, this::matchStaticFilters);
+            RecipeFinder.get(getRecipeCacheKey(), level, this::matchStaticFilters);
 
         return holders.stream()
-                .map(RecipeHolder::value)
-                .filter(this::matchFryingRecipe)
-                .sorted((r1, r2) -> r2.getIngredients().size() - r1.getIngredients().size())
-                .collect(Collectors.toList());
+            .map(RecipeHolder::value)
+            .filter(this::matchFryingRecipe)
+            .sorted((r1, r2) -> r2.getIngredients().size() - r1.getIngredients().size())
+            .collect(Collectors.toList());
     }
-
-
 
     protected abstract void onBasinRemoved();
 

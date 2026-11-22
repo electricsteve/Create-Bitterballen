@@ -3,14 +3,17 @@ package com.pyzpre.createbitterballen.block.mechanicalfryer;
 import com.pyzpre.createbitterballen.index.PartialsRegistry;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.ShaftVisual;
+
+import net.minecraft.core.Direction;
+
+import org.joml.Quaternionf;
+
 import dev.engine_room.flywheel.api.visual.DynamicVisual;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.instance.InstanceTypes;
 import dev.engine_room.flywheel.lib.instance.OrientedInstance;
 import dev.engine_room.flywheel.lib.model.Models;
 import dev.engine_room.flywheel.lib.visual.SimpleDynamicVisual;
-import net.minecraft.core.Direction;
-import org.joml.Quaternionf;
 
 
 public class FryerInstance extends ShaftVisual<MechanicalFryerEntity> implements SimpleDynamicVisual {
@@ -24,14 +27,15 @@ public class FryerInstance extends ShaftVisual<MechanicalFryerEntity> implements
         this.fryer = blockEntity;
 
         fryerHead = instancerProvider().instancer(InstanceTypes.ORIENTED, Models.partial(PartialsRegistry.MECHANICAL_FRYER_HEAD))
-                .createInstance();
+            .createInstance();
 
         fryerPole = instancerProvider().instancer(InstanceTypes.ORIENTED, Models.partial(AllPartialModels.MECHANICAL_MIXER_POLE))
-                .createInstance();
+            .createInstance();
 
         // Apply initial transformation
         transformModels(partialTick);
     }
+
     private void transformModels(float pt) {
         float renderedHeadOffset = getRenderedHeadOffset(pt);
 
@@ -41,29 +45,24 @@ public class FryerInstance extends ShaftVisual<MechanicalFryerEntity> implements
 
         // Ensure both fryerHead and fryerPole move correctly
         fryerHead.position(getVisualPosition())
-                .translatePosition(0, -renderedHeadOffset, 0)
-                .setChanged();
+            .translatePosition(0, -renderedHeadOffset, 0)
+            .setChanged();
 
         fryerPole.position(getVisualPosition())
-                .translatePosition(0, -renderedHeadOffset, 0)
-                .rotation(rotation)  // Apply rotation
-                .setChanged();
+            .translatePosition(0, -renderedHeadOffset, 0)
+            .rotation(rotation)  // Apply rotation
+            .setChanged();
     }
 
     // Method to get correct rotation for pole
     private Quaternionf getQuaternionForFacing(Direction facing) {
-        switch (facing) {
-            case NORTH:
-                return new Quaternionf().rotateY(0);  // Default rotation
-            case SOUTH:
-                return new Quaternionf().rotateY((float) Math.PI);  // 180 degrees
-            case WEST:
-                return new Quaternionf().rotateY((float) Math.PI / 2);  // 90 degrees
-            case EAST:
-                return new Quaternionf().rotateY(-(float) Math.PI / 2); // -90 degrees
-            default:
-                return new Quaternionf();
-        }
+        return switch (facing) {
+            case NORTH -> new Quaternionf().rotateY(0);  // Default rotation
+            case SOUTH -> new Quaternionf().rotateY((float) Math.PI);  // 180 degrees
+            case WEST -> new Quaternionf().rotateY((float) Math.PI / 2);  // 90 degrees
+            case EAST -> new Quaternionf().rotateY(-(float) Math.PI / 2); // -90 degrees
+            default -> new Quaternionf();
+        };
     }
 
     @Override

@@ -12,23 +12,26 @@ import com.simibubi.create.content.processing.recipe.ProcessingOutput;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.item.ItemHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
-import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.RecipeIngredientRole;
+
 import net.createmod.catnip.data.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+
 import org.apache.commons.lang3.mutable.MutableInt;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 
 @ParametersAreNonnullByDefault
 public class FryingCategory extends CreateRecipeCategory<DeepFryingRecipe> {
@@ -54,9 +57,9 @@ public class FryingCategory extends CreateRecipeCategory<DeepFryingRecipe> {
             }
 
             builder
-                    .addSlot(RecipeIngredientRole.INPUT, 17 + xOffset + (i % 3) * 19, 51 - (i / 3) * 19)
-                    .setBackground(getRenderedSlot(), -1, -1)
-                    .addItemStacks(stacks);
+                .addSlot(RecipeIngredientRole.INPUT, 17 + xOffset + (i % 3) * 19, 51 - (i / 3) * 19)
+                .setBackground(getRenderedSlot(), -1, -1)
+                .addItemStacks(stacks);
             i++;
         }
         for (SizedFluidIngredient fluidIngredient : recipe.getFluidIngredients()) {
@@ -74,10 +77,10 @@ public class FryingCategory extends CreateRecipeCategory<DeepFryingRecipe> {
             int yPosition = -19 * (i / 2) + 51;
 
             builder
-                    .addSlot(RecipeIngredientRole.OUTPUT, xPosition, yPosition)
-                    .setBackground(getRenderedSlot(result), -1, -1)
-                    .addItemStack(result.getStack())
-                    .addRichTooltipCallback(addStochasticTooltip(result));
+                .addSlot(RecipeIngredientRole.OUTPUT, xPosition, yPosition)
+                .setBackground(getRenderedSlot(result), -1, -1)
+                .addItemStack(result.getStack())
+                .addRichTooltipCallback(addStochasticTooltip(result));
             i++;
         }
 
@@ -92,17 +95,17 @@ public class FryingCategory extends CreateRecipeCategory<DeepFryingRecipe> {
         HeatCondition requiredHeat = recipe.getRequiredHeat();
         if (!requiredHeat.testBlazeBurner(BlazeBurnerBlock.HeatLevel.NONE)) {
             builder
-                    .addSlot(RecipeIngredientRole.RENDER_ONLY, 134, 81)
-                    .addItemStack(AllBlocks.BLAZE_BURNER.asStack());
+                .addSlot(RecipeIngredientRole.RENDER_ONLY, 134, 81)
+                .addItemStack(AllBlocks.BLAZE_BURNER.asStack());
         }
         if (!requiredHeat.testBlazeBurner(BlazeBurnerBlock.HeatLevel.KINDLED)) {
             builder
-                    .addSlot(RecipeIngredientRole.CATALYST, 153, 81)
-                    .addItemStack(AllItems.BLAZE_CAKE.asStack());
+                .addSlot(RecipeIngredientRole.CATALYST, 153, 81)
+                .addItemStack(AllItems.BLAZE_CAKE.asStack());
         }
     }
 
-    enum FryingType {
+    public enum FryingType {
         FRYING
     }
 
@@ -115,8 +118,6 @@ public class FryingCategory extends CreateRecipeCategory<DeepFryingRecipe> {
         this.type = type;
     }
 
-
-
     @Override
     public void draw(DeepFryingRecipe recipe,
                      IRecipeSlotsView slots,
@@ -128,31 +129,28 @@ public class FryingCategory extends CreateRecipeCategory<DeepFryingRecipe> {
 
         /* ── your original rendering code ─────────────────────────── */
         int vRows = (1 + recipe.getFluidResults().size()
-                + recipe.getRollableResults().size()) / 2;
+            + recipe.getRollableResults().size()) / 2;
         if (vRows <= 2)
             AllGuiTextures.JEI_DOWN_ARROW.render(graphics,
-                    136,
-                    -19 * (vRows - 1) + 32);
+                136,
+                -19 * (vRows - 1) + 32);
 
         AllGuiTextures shadow = noHeat ? AllGuiTextures.JEI_SHADOW
-                : AllGuiTextures.JEI_LIGHT;
+            : AllGuiTextures.JEI_LIGHT;
         shadow.render(graphics, 81, 58 + (noHeat ? 10 : 30));
 
         AllGuiTextures heatBar = noHeat ? AllGuiTextures.JEI_NO_HEAT_BAR
-                : AllGuiTextures.JEI_HEAT_BAR;
+            : AllGuiTextures.JEI_HEAT_BAR;
         heatBar.render(graphics, 4, 80);
 
         graphics.drawString(Minecraft.getInstance().font,
-                CreateLang.translateDirect(requiredHeat.getTranslationKey()),
-                9, 86, requiredHeat.getColor(), false);
+            CreateLang.translateDirect(requiredHeat.getTranslationKey()),
+            9, 86, requiredHeat.getColor(), false);
 
         if (!noHeat)
             heater.withHeat(requiredHeat.visualizeAsBlazeBurner())
-                    .draw(graphics, getBackground().getWidth() / 2 + 3, 55);
+                .draw(graphics, getBackground().getWidth() / 2 + 3, 55);
 
         fryer.draw(graphics, getBackground().getWidth() / 2 + 3, 34);
     }
-
-
-
 }

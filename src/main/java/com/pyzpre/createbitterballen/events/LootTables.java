@@ -1,6 +1,7 @@
 package com.pyzpre.createbitterballen.events;
 
 import com.pyzpre.createbitterballen.index.ItemRegistry;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
@@ -20,10 +21,10 @@ public class LootTables {
     public static void onLootTableLoad(LootTableLoadEvent event) {
         if (event.getName().equals(FISHING_FISH)) {
             LootPool.Builder poolBuilder = LootPool.lootPool()
-                    .name("bitterballen_injected_fish")
-                    .add(LootItem.lootTableItem(ItemRegistry.RAW_HERRING.get()))
-                    .setRolls(ConstantValue.exactly(1))
-                    .when(LootItemRandomChanceCondition.randomChance(0.10f)); // 10% chance
+                .name("bitterballen_injected_fish")
+                .add(LootItem.lootTableItem(ItemRegistry.RAW_HERRING.get()))
+                .setRolls(ConstantValue.exactly(1))
+                .when(LootItemRandomChanceCondition.randomChance(0.10f)); // 10% chance
 
             event.getTable().addPool(poolBuilder.build());
         }

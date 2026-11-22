@@ -7,6 +7,8 @@ import net.minecraft.client.sounds.WeighedSoundEvents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class DeepfriedSoundInstance implements SoundInstance {
@@ -35,7 +37,7 @@ public class DeepfriedSoundInstance implements SoundInstance {
     }
 
     @Override
-    public ResourceLocation getLocation() {
+    public @NotNull ResourceLocation getLocation() {
         return location;
     }
 
@@ -50,7 +52,7 @@ public class DeepfriedSoundInstance implements SoundInstance {
     }
 
     @Override
-    public Sound getSound() {
+    public @NotNull Sound getSound() {
         if (resolvedSound == null) {
             throw new IllegalStateException("Sound has not been resolved. Ensure resolve() is called before playback.");
         }
@@ -58,7 +60,7 @@ public class DeepfriedSoundInstance implements SoundInstance {
     }
 
     @Override
-    public SoundSource getSource() {
+    public @NotNull SoundSource getSource() {
         return source;
     }
 
@@ -103,7 +105,7 @@ public class DeepfriedSoundInstance implements SoundInstance {
     }
 
     @Override
-    public Attenuation getAttenuation() {
+    public @NotNull Attenuation getAttenuation() {
         return attenuation;
     }
 }

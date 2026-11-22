@@ -1,7 +1,11 @@
 package com.pyzpre.createbitterballen.block.cheese;
 
+import static com.pyzpre.createbitterballen.block.cheese.YoungCheeseBlock.TOOLS_KNIVES;
+
 import com.pyzpre.createbitterballen.index.BlockRegistry;
 import com.pyzpre.createbitterballen.index.ItemRegistry;
+
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
@@ -10,10 +14,8 @@ import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -34,24 +36,30 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.extensions.IBlockExtension;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-import static com.pyzpre.createbitterballen.block.cheese.YoungCheeseBlock.TOOLS_KNIVES;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class WaxedUnripeCheeseBlock extends Block implements IBlockExtension {
     public static final IntegerProperty AGE = BlockStateProperties.AGE_1;
     public static final BooleanProperty WAXED = BooleanProperty.create("waxed");
     private static final VoxelShape SHAPE = makeShape();
+
     public WaxedUnripeCheeseBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(AGE, 0).setValue(WAXED, true));
     }
+
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
         return SHAPE;
     }
+
     public static VoxelShape makeShape() {
         return Shapes.box(1 / 16D, 0 / 16D, 1 / 16D, 15 / 16D, 8 / 16D, 15 / 16D);
     }
@@ -65,8 +73,8 @@ public class WaxedUnripeCheeseBlock extends Block implements IBlockExtension {
                 if (handleDewaxing(world, pos)) {
                     return ItemInteractionResult.SUCCESS;
                 }
-            }  else if (stack.is(Tags.Items.TOOLS_SHEAR) || stack.is(TOOLS_KNIVES)) {
-                if (handleShearing(world, pos, state)) {
+            } else if (stack.is(Tags.Items.TOOLS_SHEAR) || stack.is(TOOLS_KNIVES)) {
+                if (handleShearing(world, pos)) {
                     player.swing(hand, true);
                     playShearingEffect(world, pos);
                     return ItemInteractionResult.CONSUME;
@@ -78,24 +86,23 @@ public class WaxedUnripeCheeseBlock extends Block implements IBlockExtension {
     }
 
 
-
     private boolean handleDewaxing(Level world, BlockPos pos) {
         BlockState unripeCheeseState = BlockRegistry.UNRIPE_CHEESE.get().defaultBlockState()
-                .setValue(AGE, 0);
+            .setValue(AGE, 0);
         world.setBlock(pos, unripeCheeseState, 3);
 
         playWaxOffEffect(world, pos);
 
         return true;
     }
-    private boolean handleShearing(Level world, BlockPos pos, BlockState state) {
-        {
-            dropCheeseProducts(world, pos);
-            world.removeBlock(pos, false);
-            playShearingEffect(world, pos);
-            return true;
-        }
+
+    private boolean handleShearing(Level world, BlockPos pos) {
+        dropCheeseProducts(world, pos);
+        world.removeBlock(pos, false);
+        playShearingEffect(world, pos);
+        return true;
     }
+
     private void dropCheeseProducts(Level world, BlockPos pos) {
         ItemStack dropItem = new ItemStack(ItemRegistry.UNRIPE_CHEESE_WEDGE.get());
         RandomSource random = world.random;
@@ -124,6 +131,7 @@ public class WaxedUnripeCheeseBlock extends Block implements IBlockExtension {
     protected void createBlockStateDefinition(net.minecraft.world.level.block.state.StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(AGE, WAXED);
     }
+
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entity, stack);
@@ -134,6 +142,7 @@ public class WaxedUnripeCheeseBlock extends Block implements IBlockExtension {
     }
 
 
+    @SuppressWarnings("SameParameterValue")
     private static void grantAdvancementCriterion(ServerPlayer player, String advancementID, String criterionKey) {
         PlayerAdvancements playerAdvancements = player.getAdvancements();
         ResourceLocation id = ResourceLocation.parse(advancementID);

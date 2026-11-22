@@ -1,12 +1,12 @@
 package com.pyzpre.createbitterballen.block.mechanicalfryer;
 
-
 import com.pyzpre.createbitterballen.index.BlockEntityRegistry;
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.AllItems;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
 import com.simibubi.create.foundation.block.IBE;
+
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -16,7 +16,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
@@ -36,6 +35,10 @@ import net.neoforged.neoforge.common.extensions.IBlockExtension;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class MechanicalFryer extends HorizontalKineticBlock implements IBE<MechanicalFryerEntity>, IBlockExtension {
     public MechanicalFryer(Properties properties) {
         super(properties);
@@ -46,10 +49,6 @@ public class MechanicalFryer extends HorizontalKineticBlock implements IBE<Mecha
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
         ItemStack itemInHand = player.getItemInHand(handIn);
         // Check client-side
-//        if (AllItems.WRENCH.isIn(itemInHand)) {
-//            UseOnContext context = new UseOnContext(player, handIn, hit);
-//            return onWrenched(state, context);
-//        }
         if (worldIn.isClientSide) {
             return ItemInteractionResult.SUCCESS; // Only execute server-side logic
         }
@@ -118,7 +117,7 @@ public class MechanicalFryer extends HorizontalKineticBlock implements IBE<Mecha
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         if (context instanceof EntityCollisionContext
-                && ((EntityCollisionContext) context).getEntity() instanceof Player)
+            && ((EntityCollisionContext) context).getEntity() instanceof Player)
             return AllShapes.CASING_14PX.get(Direction.DOWN);
 
         return AllShapes.MECHANICAL_PROCESSOR_SHAPE;
@@ -147,7 +146,7 @@ public class MechanicalFryer extends HorizontalKineticBlock implements IBE<Mecha
     @Override
     public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
         return face.getAxis() == state.getValue(HORIZONTAL_FACING)
-                .getAxis();
+            .getAxis();
     }
 
     @Override
