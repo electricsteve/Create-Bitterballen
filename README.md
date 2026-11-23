@@ -1,25 +1,60 @@
+# Create: Bitterballen
 
-Installation information
-=======
+**Is an addon for Create that adds Dutch snacks.**
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+![Create Bitterballen Logo](https://cdn.modrinth.com/data/16DuAG4k/images/3b80462cd11469598ca037d7b1625b5607a059d7.png)
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
+## Content:
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+- Mechanical Fryer
+- Frying Oil
+- Crystallised Oil
+- Stroopwafels
+- Oliebollen
+- Kroketten
+- Bitterballen
+- Frikandellen
+- Fries
+- Stamppot
+- Sunflower Seeds
+- Churros
+- And More!
 
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+![Collection of some items and blocks in the mod](https://cdn.modrinth.com/data/16DuAG4k/images/5bf42e3604d0f48b7b6da85f020d3b1fed8ca830.png)
 
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+## FAQ:
+
+### What are Bitterballen?
+
+"Bitterballen are a Dutch meat-based snack, made by making a very thick stew thickened with roux and beef stock and generously loaded with meat"
+
+### When version 1.xx?
+
+We're currently only on 1.21.1, 1.20.1 and 1.19.2 (only 1.21.1 actively supported). No plans for downgraded versions.
+
+### Why is the mod ID "create_bic_bit"?
+
+This mod used to be called "Create: Bicycles and Bitterballen" but that's no longer the case because the bicycle part of the addon got scrapped.
+
+## Dependencies:
+
+- [Create](https://modrinth.com/mod/create)
+
+## Recommended:
+
+- [Jade](https://modrinth.com/mod/jade)
+- [JEI](https://modrinth.com/mod/jei)
+- [AppleSkin](https://modrinth.com/mod/appleskin)
+
+This mod was made with Modified assets from the Create Mod under the MIT License.
+
+<!-- Don't include below in MR/CF pages -->
+## Compiling from source
+
+Use `gradlew.bat` instead of `./gradlew` on windows.
+1. `git clone https://github.com/electricsteve/Create-Bitterballen`
+2. `./gradlew clean build`
+3. The mod jar will be located in `build/libs/`
+
+> [!NOTE]
+> You can run `./gradlew runData` to generate data (under normal circumstances this is not needed, it was already done before pushing), but to make it usable, remove `src/generated/resources/assets/create_bic_bit/lang/en_us.json`
