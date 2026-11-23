@@ -112,6 +112,9 @@ dependencies {
 //    localRuntime "maven.modrinth:fRiHVvU7:5sIPA1To" // EMI
     localRuntime "maven.modrinth:R2OftAxM:XTVZDOol" // Farmer's Delight
     localRuntime "maven.modrinth:2MgfuPip:6gXB1Kcv" // Tag tooltips
+    localRuntime("maven.modrinth:T8bvmqVZ:g9Lmjjc5") // Bits 'n' Bobs
+    localRuntime("maven.modrinth:RpH8tmT1:dxtZVosY") // Azimuth API (req by BnB)
+    localRuntime("maven.modrinth:sHO3MhQx:BOTN7zzN") // Strut Your Stuff (req by BnB)
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
