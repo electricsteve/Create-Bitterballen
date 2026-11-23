@@ -1,6 +1,6 @@
 package com.pyzpre.createbitterballen.datagen;
 
-import com.pyzpre.createbitterballen.block.cheese.CheeseBlock;
+import com.pyzpre.createbitterballen.block.CheeseBlock;
 import com.pyzpre.createbitterballen.index.BlockRegistry;
 import com.pyzpre.createbitterballen.index.ItemRegistry;
 

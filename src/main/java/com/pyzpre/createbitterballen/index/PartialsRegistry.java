@@ -12,7 +12,7 @@ import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class PartialsRegistry {
-    public static final PartialModel MECHANICAL_FRYER_HEAD = block("mechanicalfryer/head");
+    public static final PartialModel MECHANICAL_FRYER_HEAD = block("mechanical_fryer/head");
 
     private static PartialModel block(@SuppressWarnings("SameParameterValue") String path) {
         return PartialModel.of(CreateBitterballen.asResource("block/" + path));

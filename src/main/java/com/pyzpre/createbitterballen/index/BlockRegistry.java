@@ -4,12 +4,14 @@ import static com.pyzpre.createbitterballen.CreateBitterballen.REGISTRATE;
 import static com.simibubi.create.foundation.data.ModelGen.customItemModel;
 import static com.simibubi.create.foundation.data.TagGen.pickaxeOnly;
 
-import com.pyzpre.createbitterballen.block.cheese.CheeseBlock;
+import com.pyzpre.createbitterballen.block.CheeseBlock;
 import com.pyzpre.createbitterballen.block.mechanicalfryer.MechanicalFryer;
 import com.pyzpre.createbitterballen.block.sunflower.SunflowerStem;
 import com.simibubi.create.api.stress.BlockStressValues;
 import com.simibubi.create.content.processing.AssemblyOperatorBlockItem;
+import com.simibubi.create.foundation.data.AssetLookup;
 import com.simibubi.create.foundation.data.SharedProperties;
+import com.simibubi.create.infrastructure.config.CStress;
 import com.tterrag.registrate.util.entry.BlockEntry;
 
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
@@ -32,17 +34,13 @@ public class BlockRegistry {
     public static final BlockEntry<MechanicalFryer> MECHANICAL_FRYER =
         REGISTRATE.block("mechanical_fryer", MechanicalFryer::new)
             .initialProperties(SharedProperties::copperMetal)
-            .properties(p -> p.noOcclusion().strength(2.0f))
+            .properties(p -> p.noOcclusion().strength(2.0f).mapColor(MapColor.COLOR_ORANGE))
             .transform(pickaxeOnly())
-            .onRegister((block) -> {
-                BlockStressValues.IMPACTS.register(block, () -> 4.0);
-            })
-//            .blockstate(BlockStateGen.horizontalBlockProvider(true))
+            .onRegister((block) -> BlockStressValues.IMPACTS.register(block, () -> 4.0))
+            .blockstate((c, p) ->
+                p.horizontalBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p), 90))
             .item(AssemblyOperatorBlockItem::new)
-//            .transform(customItemModel())
-            .model((i1, i2) -> {})
-            .build()
-            .blockstate((i1, i2) -> {})
+            .transform(customItemModel())
             .register();
     public static final BlockEntry<SunflowerStem> SUNFLOWERSTEM =
         REGISTRATE.block("sunflower_seeds", SunflowerStem::new)

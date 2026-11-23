@@ -1,4 +1,4 @@
-package com.pyzpre.createbitterballen.block.cheese;
+package com.pyzpre.createbitterballen.block;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;

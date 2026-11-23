@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "create_bic_bit:block/mechanical_fryer/block"
+    },
+    "facing=north": {
+      "model": "create_bic_bit:block/mechanical_fryer/block",
+      "y": 270
+    },
+    "facing=south": {
+      "model": "create_bic_bit:block/mechanical_fryer/block",
+      "y": 90
+    },
+    "facing=west": {
+      "model": "create_bic_bit:block/mechanical_fryer/block",
+      "y": 180
+    }
+  }
+}
