@@ -4,6 +4,7 @@ import static com.pyzpre.createbitterballen.CreateBitterballen.REGISTRATE;
 
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.simibubi.create.AllTags;
 import com.simibubi.create.content.fluids.VirtualFluid;
 import com.tterrag.registrate.builders.FluidBuilder;
 import com.tterrag.registrate.util.entry.FluidEntry;
@@ -46,6 +47,10 @@ public class FluidRegistry {
                 .tickRate(5)
                 .slopeFindDistance(5)
                 .explosionResistance(100f))
+            .source(BaseFlowingFluid.Source::new)
+            .bucket()
+            .tag(AllTags.AllItemTags.UPRIGHT_ON_BELT.tag)
+            .build()
             .register();
 
     public static final FluidEntry<BaseFlowingFluid.Flowing> KETCHUP =
@@ -61,6 +66,10 @@ public class FluidRegistry {
                 .tickRate(25)
                 .slopeFindDistance(3)
                 .explosionResistance(100f))
+            .source(BaseFlowingFluid.Source::new)
+            .bucket()
+            .tag(AllTags.AllItemTags.UPRIGHT_ON_BELT.tag)
+            .build()
             .register();
     public static final FluidEntry<BaseFlowingFluid.Flowing> MAYONNAISE =
         REGISTRATE.standardFluid("mayonnaise",
@@ -75,6 +84,10 @@ public class FluidRegistry {
                 .tickRate(25)
                 .slopeFindDistance(3)
                 .explosionResistance(100f))
+            .source(BaseFlowingFluid.Source::new)
+            .bucket()
+            .tag(AllTags.AllItemTags.UPRIGHT_ON_BELT.tag)
+            .build()
             .register();
     public static final FluidEntry<BaseFlowingFluid.Flowing> CURDLED_MILK =
         REGISTRATE.standardFluid("curdled_milk",
@@ -89,6 +102,10 @@ public class FluidRegistry {
                 .tickRate(5)
                 .slopeFindDistance(4)
                 .explosionResistance(100f))
+            .source(BaseFlowingFluid.Source::new)
+            .bucket()
+            .tag(AllTags.AllItemTags.UPRIGHT_ON_BELT.tag)
+            .build()
             .register();
     public static final FluidEntry<VirtualFluid> STAMPPOT =
         REGISTRATE.virtualFluid("stamppot")

@@ -48,12 +48,15 @@ public class ItemRegistry {
         .register();
     public static final ItemEntry<Item> COATED_OLIEBOLLEN = REGISTRATE.item("coated_oliebollen", Item::new)
         .properties(p -> p.food((new FoodProperties.Builder()).nutrition(9).saturationModifier(0.4f).build()))
+        .lang("Sugar Coated Oliebollen")
         .register();
     public static final ItemEntry<Item> RAW_CHEESE_SOUFFLE = REGISTRATE.item("raw_cheese_souffle", Item::new)
         .properties(p -> p.food((new FoodProperties.Builder()).nutrition(3).saturationModifier(0.5f).build()))
+        .lang("Raw Cheese Soufflé")
         .register();
     public static final ItemEntry<Item> CHEESE_SOUFFLE = REGISTRATE.item("cheese_souffle", Item::new)
         .properties(p -> p.food((new FoodProperties.Builder()).nutrition(11).saturationModifier(0.5f).build()))
+        .lang("Cheese Soufflé")
         .register();
     public static final ItemEntry<Item> RAW_KROKET = REGISTRATE.item("raw_kroket", Item::new)
         .properties(p -> p.food((new FoodProperties.Builder()).nutrition(4).saturationModifier(0.2f).effect(() -> new MobEffectInstance(MobEffects.HUNGER, 600, 0), 0.3F).build()))
@@ -72,6 +75,7 @@ public class ItemRegistry {
         .register();
     public static final ItemEntry<EffectTooltipItem> MAYONNAISE_KETCHUP_TOPPED_KROKET_SANDWICH = REGISTRATE.item("mayonnaise_ketchup_topped_kroket_sandwich", EffectTooltipItem::new)
         .properties(p -> p.food((new FoodProperties.Builder()).alwaysEdible().nutrition(14).saturationModifier(0.5f).effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 200, 0), 1F).effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 200, 0), 1F).build()))
+        .lang("Double Topped Kroket Sandwich")
         .register();
     public static final ItemEntry<Item> RAW_BITTERBALLEN = REGISTRATE.item("raw_bitterballen", Item::new)
         .properties(p -> p.food((new FoodProperties.Builder()).nutrition(3).saturationModifier(0.2f).effect(() -> new MobEffectInstance(MobEffects.HUNGER, 600, 0), 0.3F).build()))
@@ -102,6 +106,7 @@ public class ItemRegistry {
         .register();
     public static final ItemEntry<EffectTooltipItem> MAYONNAISE_KETCHUP_TOPPED_FRIKANDEL_SANDWICH = REGISTRATE.item("mayonnaise_ketchup_topped_frikandel_sandwich", EffectTooltipItem::new)
         .properties(p -> p.food((new FoodProperties.Builder()).alwaysEdible().nutrition(14).saturationModifier(0.5f).effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 200, 0), 1F).effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 200, 0), 1F).build()))
+        .lang("Double Topped Frikandel Sandwich")
         .register();
     public static final ItemEntry<Item> RAW_FRIES = REGISTRATE.item("raw_fries", Item::new)
         .properties(p -> p.food((new FoodProperties.Builder()).nutrition(1).saturationModifier(0.3f).build()))
@@ -120,6 +125,7 @@ public class ItemRegistry {
         .register();
     public static final ItemEntry<WrappedItem> WRAPPED_MAYONNAISE_KETCHUP_TOPPED_FRIES = REGISTRATE.item("wrapped_mayonnaise_ketchup_topped_fries", WrappedItem::new)
         .properties(p -> p.food((new FoodProperties.Builder()).alwaysEdible().nutrition(7).saturationModifier(0.6f).effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 200, 0), 1F).effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 200, 0), 1F).build()))
+        .lang("Wrapped Double Topped Fries")
         .register();
     public static final ItemEntry<Item> RAW_CHURROS = REGISTRATE.item("raw_churros", Item::new)
         .properties(p -> p.food((new FoodProperties.Builder()).nutrition(2).saturationModifier(0.3f).build()))
@@ -132,9 +138,11 @@ public class ItemRegistry {
         .register();
     public static final ItemEntry<Item> COATED_CHURROS = REGISTRATE.item("coated_churros", Item::new)
         .properties(p -> p.food((new FoodProperties.Builder()).nutrition(10).saturationModifier(0.8f).build()))
+        .lang("Chocolate Glazed Churros")
         .register();
     public static final ItemEntry<WrappedItem> WRAPPED_COATED_CHURROS = REGISTRATE.item("wrapped_coated_churros", WrappedItem::new)
         .properties(p -> p.food((new FoodProperties.Builder()).nutrition(10).saturationModifier(0.8f).build()))
+        .lang("Wrapped Chocolate Glazed Churros")
         .register();
     public static final ItemEntry<Item> RAW_HERRING = REGISTRATE.item("raw_herring", Item::new)
         .properties(p -> p.food((new FoodProperties.Builder()).nutrition(3).saturationModifier(0.2f).build()))
@@ -194,6 +202,7 @@ public class ItemRegistry {
             0xb18a53,
             props
         ))
+        .model((ctx, provider) -> provider.spawnEggItem(ctx.get()))
         .register();
 
 
@@ -204,7 +213,7 @@ public class ItemRegistry {
             SoundEvents.BUCKET_EMPTY_FISH,
             properties.stacksTo(1)
         )
-    ).register();
+    ).lang("Bucket of Herring").register();
 
 
     public static void register() {

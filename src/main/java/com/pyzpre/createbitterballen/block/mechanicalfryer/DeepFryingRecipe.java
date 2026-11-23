@@ -34,10 +34,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class DeepFryingRecipe extends BasinRecipe {
+    // idk why but compilation fails without cast
+    @SuppressWarnings("RedundantCast")
     public static final MapCodec<DeepFryingRecipe> CODEC =
-        ProcessingRecipe.codec(DeepFryingRecipe::new, ProcessingRecipeParams.CODEC);
+        ProcessingRecipe.codec((ProcessingRecipe.Factory<ProcessingRecipeParams, DeepFryingRecipe>) DeepFryingRecipe::new, ProcessingRecipeParams.CODEC);
+    @SuppressWarnings("RedundantCast")
     public static final StreamCodec<RegistryFriendlyByteBuf, DeepFryingRecipe> STREAM_CODEC =
-        ProcessingRecipe.streamCodec(DeepFryingRecipe::new, ProcessingRecipeParams.STREAM_CODEC);
+        ProcessingRecipe.streamCodec((ProcessingRecipe.Factory<ProcessingRecipeParams, DeepFryingRecipe>) DeepFryingRecipe::new, ProcessingRecipeParams.STREAM_CODEC);
 
     public static boolean match(BasinBlockEntity basin, MechanicalFryerEntity fryer, Recipe<?> recipe) {
         FilteringBehaviour filter = basin.getFilter();

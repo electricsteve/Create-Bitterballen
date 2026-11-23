@@ -1,0 +1,14 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "create_bic_bit:unripe_cheese_wedge"
+        }
+      ],
+      "rolls": 4
+    }
+  ],
+  "random_sequence": "create_bic_bit:cheese/unripe_cheese"
+}

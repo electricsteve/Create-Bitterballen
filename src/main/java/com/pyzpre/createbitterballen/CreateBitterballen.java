@@ -3,6 +3,7 @@ package com.pyzpre.createbitterballen;
 import static net.neoforged.neoforge.common.NeoForge.EVENT_BUS;
 
 import com.pyzpre.createbitterballen.block.mechanicalfryer.MechanicalFryerEntity;
+import com.pyzpre.createbitterballen.datagen.CBLootTableProvider;
 import com.pyzpre.createbitterballen.events.EntityEffectHandler;
 import com.pyzpre.createbitterballen.events.LootTables;
 import com.pyzpre.createbitterballen.events.SunflowerInteractionHandler;
@@ -25,6 +26,9 @@ import net.createmod.catnip.lang.FontHelper;
 import net.createmod.ponder.foundation.PonderIndex;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -36,11 +40,16 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @Mod(CreateBitterballen.MOD_ID)
 public class CreateBitterballen {
@@ -72,6 +81,7 @@ public class CreateBitterballen {
         RecipeRegistry.register(eventBus);
         eventBus.addListener(this::setup);
         eventBus.addListener(this::setupClient);
+        eventBus.addListener(this::dataGen);
         eventBus.addListener(SoundsRegistry::register);
         EVENT_BUS.register(SunflowerInteractionHandler.class);
     }
@@ -98,9 +108,17 @@ public class CreateBitterballen {
     }
 
     public static ResourceLocation asResource(String path) {
-//        return new ResourceLocation(MOD_ID, path);
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
-
+    private void dataGen(GatherDataEvent event) {
+        DataGenerator generator = event.getGenerator();
+        PackOutput output = generator.getPackOutput();
+        ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
+        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
+        generator.addProvider(
+            event.includeServer(),
+            new CBLootTableProvider(output, lookupProvider)
+        );
+    }
 }

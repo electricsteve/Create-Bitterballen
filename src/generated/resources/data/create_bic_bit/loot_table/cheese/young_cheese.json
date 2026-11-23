@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:empty",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "create_bic_bit:young_cheese_wedge"
+        }
+      ],
+      "rolls": 4.0
+    }
+  ],
+  "random_sequence": "create_bic_bit:cheese/young_cheese"
+}

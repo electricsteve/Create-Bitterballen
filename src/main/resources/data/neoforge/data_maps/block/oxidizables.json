@@ -1,0 +1,10 @@
+{
+  "values": {
+    "create_bic_bit:unripe_cheese": {
+      "next_oxidation_stage": "create_bic_bit:young_cheese"
+    },
+    "create_bic_bit:young_cheese": {
+      "next_oxidation_stage": "create_bic_bit:aged_cheese"
+    }
+  }
+}

@@ -4,27 +4,29 @@ import static com.pyzpre.createbitterballen.CreateBitterballen.REGISTRATE;
 import static com.simibubi.create.foundation.data.ModelGen.customItemModel;
 import static com.simibubi.create.foundation.data.TagGen.pickaxeOnly;
 
-import com.pyzpre.createbitterballen.block.cheese.AgedCheeseBlock;
-import com.pyzpre.createbitterballen.block.cheese.UnripeCheeseBlock;
-import com.pyzpre.createbitterballen.block.cheese.WaxedAgedCheeseBlock;
-import com.pyzpre.createbitterballen.block.cheese.WaxedUnripeCheeseBlock;
-import com.pyzpre.createbitterballen.block.cheese.WaxedYoungCheeseBlock;
-import com.pyzpre.createbitterballen.block.cheese.YoungCheeseBlock;
+import com.pyzpre.createbitterballen.block.cheese.CheeseBlock;
 import com.pyzpre.createbitterballen.block.mechanicalfryer.MechanicalFryer;
 import com.pyzpre.createbitterballen.block.sunflower.SunflowerStem;
 import com.simibubi.create.api.stress.BlockStressValues;
 import com.simibubi.create.content.processing.AssemblyOperatorBlockItem;
-import com.simibubi.create.foundation.data.BlockStateGen;
 import com.simibubi.create.foundation.data.SharedProperties;
 import com.tterrag.registrate.util.entry.BlockEntry;
 
+import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
 public class BlockRegistry {
     public static final BlockEntry<MechanicalFryer> MECHANICAL_FRYER =
@@ -35,9 +37,12 @@ public class BlockRegistry {
             .onRegister((block) -> {
                 BlockStressValues.IMPACTS.register(block, () -> 4.0);
             })
-            .blockstate(BlockStateGen.horizontalBlockProvider(true))
+//            .blockstate(BlockStateGen.horizontalBlockProvider(true))
             .item(AssemblyOperatorBlockItem::new)
-            .transform(customItemModel())
+//            .transform(customItemModel())
+            .model((i1, i2) -> {})
+            .build()
+            .blockstate((i1, i2) -> {})
             .register();
     public static final BlockEntry<SunflowerStem> SUNFLOWERSTEM =
         REGISTRATE.block("sunflower_seeds", SunflowerStem::new)
@@ -45,74 +50,92 @@ public class BlockRegistry {
             .properties(p -> p.sound(SoundType.GRASS))
             .properties(p -> p.offsetType(BlockBehaviour.OffsetType.XZ).ignitedByLava().pushReaction(PushReaction.DESTROY).noCollission().instabreak().mapColor(MapColor.PLANT))
             .item()
+            .model((i1, i2) -> {})
             .build()
             .lang("Sunflower Seeds")
+            .loot((lootTables, block) -> {
+                lootTables.add(block,
+                    LootTable.lootTable().withPool(lootTables.applyExplosionCondition(block,
+                        LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(block))
+                            .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(block).setProperties(
+                                StatePropertiesPredicate.Builder.properties().hasProperty(DoublePlantBlock.HALF, DoubleBlockHalf.LOWER)
+                            )))
+                    )
+                );
+            })
+            .blockstate((i1, i2) -> {})
             .register();
-    public static final BlockEntry<UnripeCheeseBlock> UNRIPE_CHEESE =
-        REGISTRATE.block("unripe_cheese", UnripeCheeseBlock::new)
+    public static final BlockEntry<CheeseBlock> UNRIPE_CHEESE =
+        REGISTRATE.block("unripe_cheese", props -> new CheeseBlock(props, CheeseBlock.AgingState.UNRIPE, false))
             .initialProperties(() -> Blocks.CAKE)
             .properties(p -> p.sound(SoundType.WOOD))
             .transform(pickaxeOnly())
-            .item()
-            .build()
             .lang("Unripe Cheese")
             .item(AssemblyOperatorBlockItem::new)
-            .transform(customItemModel())
+//            .transform(customItemModel())
+            .model((i1, i2) -> {})
+            .build()
+            .blockstate((i1, i2) -> {})
             .register();
-    public static final BlockEntry<WaxedUnripeCheeseBlock> WAXED_UNRIPE_CHEESE =
-        REGISTRATE.block("waxed_unripe_cheese", WaxedUnripeCheeseBlock::new)
+    public static final BlockEntry<CheeseBlock> WAXED_UNRIPE_CHEESE =
+        REGISTRATE.block("waxed_unripe_cheese", props -> new CheeseBlock(props, CheeseBlock.AgingState.UNRIPE, true))
             .initialProperties(() -> Blocks.CAKE)
             .properties(p -> p.sound(SoundType.WOOD))
             .transform(pickaxeOnly())
-            .item()
-            .build()
             .lang("Waxed Unripe Cheese")
             .item(AssemblyOperatorBlockItem::new)
-            .transform(customItemModel())
+//            .transform(customItemModel())
+            .model((i1, i2) -> {})
+            .build()
+            .blockstate((i1, i2) -> {})
             .register();
-    public static final BlockEntry<YoungCheeseBlock> YOUNG_CHEESE =
-        REGISTRATE.block("young_cheese", YoungCheeseBlock::new)
+    public static final BlockEntry<CheeseBlock> YOUNG_CHEESE =
+        REGISTRATE.block("young_cheese", props -> new CheeseBlock(props, CheeseBlock.AgingState.YOUNG, false))
             .initialProperties(() -> Blocks.CAKE)
             .properties(p -> p.sound(SoundType.WOOD))
             .transform(pickaxeOnly())
-            .item()
-            .build()
             .lang("Young Cheese")
             .item(AssemblyOperatorBlockItem::new)
-            .transform(customItemModel())
+//            .transform(customItemModel())
+            .model((i1, i2) -> {})
+            .build()
+            .blockstate((i1, i2) -> {})
             .register();
-    public static final BlockEntry<WaxedYoungCheeseBlock> WAXED_YOUNG_CHEESE =
-        REGISTRATE.block("waxed_young_cheese", WaxedYoungCheeseBlock::new)
+    public static final BlockEntry<CheeseBlock> WAXED_YOUNG_CHEESE =
+        REGISTRATE.block("waxed_young_cheese", props -> new CheeseBlock(props, CheeseBlock.AgingState.YOUNG, true))
             .initialProperties(() -> Blocks.CAKE)
             .properties(p -> p.sound(SoundType.WOOD))
             .transform(pickaxeOnly())
-            .item()
-            .build()
             .lang("Waxed Young Cheese")
             .item(AssemblyOperatorBlockItem::new)
-            .transform(customItemModel())
+//            .transform(customItemModel())
+            .model((i1, i2) -> {})
+            .build()
+            .blockstate((i1, i2) -> {})
             .register();
-    public static final BlockEntry<AgedCheeseBlock> AGED_CHEESE =
-        REGISTRATE.block("aged_cheese", AgedCheeseBlock::new)
+    public static final BlockEntry<CheeseBlock> AGED_CHEESE =
+        REGISTRATE.block("aged_cheese", props -> new CheeseBlock(props, CheeseBlock.AgingState.AGED, false))
             .initialProperties(() -> Blocks.CAKE)
             .properties(p -> p.sound(SoundType.WOOD))
             .transform(pickaxeOnly())
-            .item()
-            .build()
             .lang("Aged Cheese")
             .item(AssemblyOperatorBlockItem::new)
-            .transform(customItemModel())
+//            .transform(customItemModel())
+            .model((i1, i2) -> {})
+            .build()
+            .blockstate((i1, i2) -> {})
             .register();
-    public static final BlockEntry<WaxedAgedCheeseBlock> WAXED_AGED_CHEESE =
-        REGISTRATE.block("waxed_aged_cheese", WaxedAgedCheeseBlock::new)
+    public static final BlockEntry<CheeseBlock> WAXED_AGED_CHEESE =
+        REGISTRATE.block("waxed_aged_cheese", props -> new CheeseBlock(props, CheeseBlock.AgingState.AGED, true))
             .initialProperties(() -> Blocks.CAKE)
             .properties(p -> p.sound(SoundType.WOOD))
             .transform(pickaxeOnly())
-            .item()
-            .build()
             .lang("Waxed Aged Cheese")
             .item(AssemblyOperatorBlockItem::new)
-            .transform(customItemModel())
+//            .transform(customItemModel())
+            .model((i1, i2) -> {})
+            .build()
+            .blockstate((i1, i2) -> {})
             .register();
 
 
@@ -122,6 +145,7 @@ public class BlockRegistry {
             .properties(p -> p.instrument(NoteBlockInstrument.HAT).strength(1F).sound(SoundType.GLASS).noOcclusion().isValidSpawn((state, reader, pos, entity) -> false).isRedstoneConductor((state, world, pos) -> false).isSuffocating((state, reader, pos) -> false).isViewBlocking((state, reader, pos) -> false))
             .transform(pickaxeOnly())
             .item()
+            .model((i1, i2) -> {})
             .build()
             .lang("Crystallised Oil")
             .register();
