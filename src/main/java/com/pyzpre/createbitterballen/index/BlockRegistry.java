@@ -6,12 +6,11 @@ import static com.simibubi.create.foundation.data.TagGen.pickaxeOnly;
 
 import com.pyzpre.createbitterballen.block.CheeseBlock;
 import com.pyzpre.createbitterballen.block.mechanicalfryer.MechanicalFryer;
-import com.pyzpre.createbitterballen.block.sunflower.SunflowerStem;
+import com.pyzpre.createbitterballen.block.CBSunflowerBlock;
 import com.simibubi.create.api.stress.BlockStressValues;
 import com.simibubi.create.content.processing.AssemblyOperatorBlockItem;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.simibubi.create.foundation.data.SharedProperties;
-import com.simibubi.create.infrastructure.config.CStress;
 import com.tterrag.registrate.util.entry.BlockEntry;
 
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
@@ -42,8 +41,8 @@ public class BlockRegistry {
             .item(AssemblyOperatorBlockItem::new)
             .transform(customItemModel())
             .register();
-    public static final BlockEntry<SunflowerStem> SUNFLOWERSTEM =
-        REGISTRATE.block("sunflower_seeds", SunflowerStem::new)
+    public static final BlockEntry<CBSunflowerBlock> SUNFLOWERSTEM =
+        REGISTRATE.block("sunflower_seeds", CBSunflowerBlock::new)
             .properties(p -> p.noOcclusion().strength(1.0f))
             .properties(p -> p.sound(SoundType.GRASS))
             .properties(p -> p.offsetType(BlockBehaviour.OffsetType.XZ).ignitedByLava().pushReaction(PushReaction.DESTROY).noCollission().instabreak().mapColor(MapColor.PLANT))

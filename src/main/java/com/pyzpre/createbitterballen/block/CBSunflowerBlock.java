@@ -1,4 +1,4 @@
-package com.pyzpre.createbitterballen.block.sunflower;
+package com.pyzpre.createbitterballen.block;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -29,10 +29,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class SunflowerStem extends DoublePlantBlock implements BonemealableBlock {
+public class CBSunflowerBlock extends DoublePlantBlock implements BonemealableBlock {
     public static final IntegerProperty AGE = BlockStateProperties.AGE_3;
 
-    public SunflowerStem(Properties properties) {
+    public CBSunflowerBlock(Properties properties) {
         super(properties.offsetType(OffsetType.XZ));
     }
 
@@ -65,71 +65,34 @@ public class SunflowerStem extends DoublePlantBlock implements BonemealableBlock
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
-        Vec3 offset = state.getOffset(level, pos); // Get the random offset
+        Vec3 offset = state.getOffset(level, pos);
         int age = state.getValue(AGE);
-        DoubleBlockHalf half = state.getValue(HALF); // Get the half property (LOWER or UPPER)
+        DoubleBlockHalf half = state.getValue(HALF);
 
         VoxelShape shape;
         switch (age) {
-            case 0: // First growth stage: 3x3 wide and 5 tall
-                shape = Shapes.box(5 / 16D, 0 / 16D, 5 / 16D, 11 / 16D, 5 / 16D, 11 / 16D);
+            case 0: // First growth stage: 6x6 wide and 5 tall
+                shape = Shapes.box(5/16D, 0/16D, 5/16D, 11/16D, 5/16D, 11/16D);
                 break;
             case 1: // Second growth stage: slightly taller
-                shape = Shapes.box(5 / 16D, 0 / 16D, 5 / 16D, 11 / 16D, 12 / 16D, 11 / 16D);
+                shape = Shapes.box(5/16D, 0/16D, 5/16D, 11/16D, 12/16D, 11/16D);
                 break;
-            case 2: // Third growth stage: bottom and top halves have different shapes
-                if (half == DoubleBlockHalf.LOWER) {
-                    shape = Shapes.box(5 / 16D, 0 / 16D, 5 / 16D, 11 / 16D, 16 / 16D, 11 / 16D); // Bottom part for age 2
-                } else {
-                    shape = Shapes.box(5 / 16D, 0 / 16D, 5 / 16D, 11 / 16D, 11 / 16D, 11 / 16D); // Top part for age 2
-                }
+            case 2, 3: // Third growth stage: bottom and top halves have different shapes
+                if (half == DoubleBlockHalf.LOWER)
+                    shape = Shapes.box(5 / 16D, 0 / 16D, 5 / 16D, 11 / 16D, 16 / 16D, 11 / 16D);
+                else shape = Shapes.box(5 / 16D, 0 / 16D, 5 / 16D, 11 / 16D, 11 / 16D, 11 / 16D);
                 break;
-            case 3: // Fully grown
-                if (half == DoubleBlockHalf.LOWER) {
-                    shape = Shapes.box(5 / 16D, 0 / 16D, 5 / 16D, 11 / 16D, 16 / 16D, 11 / 16D); // Bottom part for age 2
-                } else {
-                    shape = Shapes.box(5 / 16D, 0 / 16D, 5 / 16D, 11 / 16D, 11 / 16D, 11 / 16D);
-                }
-                break;
-            default: // Fallback (shouldn't happen)
+            default:
                 shape = Shapes.block();
         }
 
         return shape.move(offset.x, offset.y, offset.z); // Apply the random offset
     }
 
-    public static VoxelShape makeShape() {
-        return Shapes.box(5 / 16D, 0 / 16D, 5 / 16D, 11 / 16D, 16 / 16D, 11 / 16D);
-    }
-
-
     @Override
     public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
-        if (random.nextInt(100) != 0) {
-            return;
-        }
-        if (state.getValue(HALF) == DoubleBlockHalf.LOWER) {
-            int currentAge = state.getValue(AGE);
-
-            if (currentAge < 3) {
-                int newAge = currentAge + 1;
-                world.setBlockAndUpdate(pos, state.setValue(AGE, newAge));
-
-
-                if (newAge == 2 && world.isEmptyBlock(pos.above())) {
-                    world.setBlockAndUpdate(pos.above(), this.defaultBlockState().setValue(HALF, DoubleBlockHalf.UPPER).setValue(AGE, 2));
-                }
-            }
-
-            if (currentAge == 2) {
-                BlockPos upperPartPos = pos.above();
-                boolean AboveBlockRemoved = world.setBlock(upperPartPos, Blocks.AIR.defaultBlockState(), 18);
-                if (AboveBlockRemoved) {
-                    DoublePlantBlock.placeAt(world, Blocks.SUNFLOWER.defaultBlockState(), pos, 18);
-                }
-
-            }
-        }
+        if (random.nextInt(100) != 0) return;
+        if (state.getValue(HALF) == DoubleBlockHalf.LOWER) growStemOrSunflower(world, pos, state);
     }
 
     @Override
@@ -149,33 +112,25 @@ public class SunflowerStem extends DoublePlantBlock implements BonemealableBlock
 
     @Override
     public void performBonemeal(ServerLevel world, RandomSource random, BlockPos pos, BlockState state) {
-        if (state.getValue(HALF) == DoubleBlockHalf.LOWER) {
-            growStemOrSunflower(world, pos, state);
-        } else {
+        if (state.getValue(HALF) == DoubleBlockHalf.LOWER) growStemOrSunflower(world, pos, state);
+        else {
             BlockPos lowerPartPos = pos.below();
             BlockState lowerPartState = world.getBlockState(lowerPartPos);
-            if (lowerPartState.getBlock() == this) {
-                growStemOrSunflower(world, lowerPartPos, lowerPartState);
-            }
+            if (lowerPartState.getBlock() == this) growStemOrSunflower(world, lowerPartPos, lowerPartState);
         }
     }
 
     private void growStemOrSunflower(ServerLevel world, BlockPos pos, BlockState state) {
         int currentAge = state.getValue(AGE);
-        if (currentAge < 3) {
+        if (currentAge == 2) {
+            BlockPos upperPartPos = pos.above();
+            boolean AboveBlockRemoved = world.setBlock(upperPartPos, Blocks.AIR.defaultBlockState(), 18);
+            if (AboveBlockRemoved) DoublePlantBlock.placeAt(world, Blocks.SUNFLOWER.defaultBlockState(), pos, 18);
+        } else if (currentAge < 3) {
             int newAge = currentAge + 1;
             world.setBlockAndUpdate(pos, state.setValue(AGE, newAge));
-
-            if (newAge == 2 && world.isEmptyBlock(pos.above())) {
+            if (newAge == 2 && world.isEmptyBlock(pos.above()))
                 world.setBlockAndUpdate(pos.above(), this.defaultBlockState().setValue(HALF, DoubleBlockHalf.UPPER).setValue(AGE, 2));
-            }
-        }
-
-        if (currentAge == 2) {
-            boolean isAboveBlockRemoved = world.removeBlock(pos.above(), false);
-            if (isAboveBlockRemoved) {
-                DoublePlantBlock.placeAt(world, Blocks.SUNFLOWER.defaultBlockState(), pos, 3);
-            }
         }
     }
 }

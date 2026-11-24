@@ -2,7 +2,7 @@ package com.pyzpre.createbitterballen.events;
 
 import static net.minecraft.world.level.block.Block.popResource;
 
-import com.pyzpre.createbitterballen.block.sunflower.SunflowerStem;
+import com.pyzpre.createbitterballen.block.CBSunflowerBlock;
 import com.pyzpre.createbitterballen.index.BlockRegistry;
 
 import net.minecraft.advancements.AdvancementHolder;
@@ -53,13 +53,13 @@ public class SunflowerInteractionHandler {
             }
 
 
-            world.setBlock(pos, BlockRegistry.SUNFLOWERSTEM.get().defaultBlockState().setValue(SunflowerStem.AGE, 2), 3);
+            world.setBlock(pos, BlockRegistry.SUNFLOWERSTEM.get().defaultBlockState().setValue(CBSunflowerBlock.AGE, 2), 3);
 
             world.setBlock(
                 pos.above(),
                 BlockRegistry.SUNFLOWERSTEM.get().defaultBlockState()
-                    .setValue(SunflowerStem.HALF, DoubleBlockHalf.UPPER)
-                    .setValue(SunflowerStem.AGE, 2),
+                    .setValue(CBSunflowerBlock.HALF, DoubleBlockHalf.UPPER)
+                    .setValue(CBSunflowerBlock.AGE, 2),
                 3
             );
 

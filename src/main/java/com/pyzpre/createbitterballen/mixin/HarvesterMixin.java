@@ -1,6 +1,6 @@
 package com.pyzpre.createbitterballen.mixin;
 
-import com.pyzpre.createbitterballen.block.sunflower.SunflowerStem;
+import com.pyzpre.createbitterballen.block.CBSunflowerBlock;
 import com.pyzpre.createbitterballen.index.BlockRegistry;
 import com.simibubi.create.content.contraptions.actors.harvester.HarvesterMovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
@@ -93,11 +93,11 @@ public abstract class HarvesterMixin {
         world.setBlock(upperPos, Blocks.AIR.defaultBlockState(), 18);
 
         BlockState lowerStemState = BlockRegistry.SUNFLOWERSTEM.get().defaultBlockState()
-            .setValue(SunflowerStem.AGE, 2)
+            .setValue(CBSunflowerBlock.AGE, 2)
             .setValue(DoublePlantBlock.HALF, DoubleBlockHalf.LOWER);
 
         BlockState upperStemState = BlockRegistry.SUNFLOWERSTEM.get().defaultBlockState()
-            .setValue(SunflowerStem.AGE, 2)
+            .setValue(CBSunflowerBlock.AGE, 2)
             .setValue(DoublePlantBlock.HALF, DoubleBlockHalf.UPPER);
 
         world.setBlock(lowerPos, lowerStemState, 3);
