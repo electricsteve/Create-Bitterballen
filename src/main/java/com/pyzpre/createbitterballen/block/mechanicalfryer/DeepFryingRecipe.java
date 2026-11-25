@@ -31,6 +31,7 @@ import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+// TODO: this is a mess, just redo the recipe
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class DeepFryingRecipe extends BasinRecipe {
@@ -44,49 +45,37 @@ public class DeepFryingRecipe extends BasinRecipe {
 
     public static boolean match(BasinBlockEntity basin, MechanicalFryerEntity fryer, Recipe<?> recipe) {
         FilteringBehaviour filter = basin.getFilter();
-        if (filter == null)
-            return false;
-
         Level level = basin.getLevel();
-        if (level == null) return false;
-        boolean filterTest = filter.test(recipe.getResultItem(level
-            .registryAccess()));
+        if (filter == null || level == null) return false;
+        boolean filterTest = filter.test(recipe.getResultItem(level.registryAccess()));
         if (recipe instanceof BasinRecipe basinRecipe) {
-            if (basinRecipe.getRollableResults().isEmpty()
-                && !basinRecipe.getFluidResults().isEmpty())
-                filterTest = filter.test(basinRecipe.getFluidResults()
-                    .getFirst());
+            if (basinRecipe.getRollableResults().isEmpty() && !basinRecipe.getFluidResults().isEmpty())
+                filterTest = filter.test(basinRecipe.getFluidResults().getFirst());
         }
-
         if (!filterTest) return false;
-
         return apply(basin, fryer, recipe);
     }
 
     private static boolean apply(BasinBlockEntity basin, MechanicalFryerEntity fryer, Recipe<?> recipe) {
         boolean isDeepFryingRecipe = recipe instanceof DeepFryingRecipe;
 
+        // Collect the available items from fryer and fluids from basin
         IItemHandler availableItems = fryer.inputInv;
         Level level = basin.getLevel();
         if (level == null) return false;
         IFluidHandler availableFluids = level.getCapability(Capabilities.FluidHandler.BLOCK, basin.getBlockPos(), null);
 
-        if (availableItems == null || availableFluids == null) {
-            return false;
-        }
+        if (availableItems == null || availableFluids == null) return false;
 
+        // If the recipe has a heat requirement, test this
         BlazeBurnerBlock.HeatLevel heat = BasinBlockEntity.getHeatLevelOf(level.getBlockState(basin.getBlockPos().below(1)));
-        if (isDeepFryingRecipe && !((DeepFryingRecipe) recipe).getRequiredHeat().testBlazeBurner(heat)) {
-            return false;
-        }
+        if (isDeepFryingRecipe && !((DeepFryingRecipe) recipe).getRequiredHeat().testBlazeBurner(heat)) return false;
 
         ItemStack inputStack = availableItems.getStackInSlot(0);
         int itemCount = inputStack.getCount(); // Get initial item count
+        if (itemCount <= 0) return false;  // No items to process
 
-        if (itemCount <= 0) {
-            return false;  // No items to process
-        }
-
+        // Get fluid ingredients from the recipe
         List<SizedFluidIngredient> fluidIngredients = isDeepFryingRecipe
             ? ((DeepFryingRecipe) recipe).getFluidIngredients()
             : Collections.emptyList();
@@ -96,22 +85,15 @@ public class DeepFryingRecipe extends BasinRecipe {
         for (SizedFluidIngredient fluidIngredient : fluidIngredients) {
             int requiredAmount = fluidIngredient.amount();
             int totalMatchingAmount = 0;
-
             // Calculate total fluid amount available for this ingredient
             for (int tank = 0; tank < availableFluids.getTanks(); tank++) {
                 FluidStack fluidInTank = availableFluids.getFluidInTank(tank);
-
-                if (fluidIngredient.test(fluidInTank)) {
-                    totalMatchingAmount += fluidInTank.getAmount();
-                }
+                if (fluidIngredient.ingredient().test(fluidInTank)) totalMatchingAmount += fluidInTank.getAmount();
             }
-
             maxProcessableItems = Math.min(maxProcessableItems, totalMatchingAmount / requiredAmount);
         }
 
-        if (maxProcessableItems <= 0) {
-            return false; // Not enough fluids to process any items
-        }
+        if (maxProcessableItems <= 0) return false; // Not enough fluids to process any items
 
         // Process multiple items if conditions allow
         inputStack.shrink(maxProcessableItems);
@@ -146,11 +128,11 @@ public class DeepFryingRecipe extends BasinRecipe {
             }
         }
 
+        // Signal that basin and fryer state have changed
         basin.setChanged();
         basin.sendData();
-        fryer.sendData();
         fryer.setChanged();
-
+        fryer.sendData();
         return true;
     }
 
@@ -173,10 +155,7 @@ public class DeepFryingRecipe extends BasinRecipe {
             for (FluidStack fluidResult : fluidResults) {
                 FluidStack outputFluidStack = fluidResult.copy();
                 outputFluidStack.setAmount(outputFluidStack.getAmount() * quantity);
-                if (inputFluidsToBasin(basin, outputFluidStack)) {
-                    basin.setChanged();
-                    basin.sendData();  // Sync fluid state
-                }
+                inputFluidsToBasin(basin, outputFluidStack);
             }
         } else {
             ItemStack result = recipe.getResultItem(level.registryAccess()).copy();
@@ -187,21 +166,13 @@ public class DeepFryingRecipe extends BasinRecipe {
         return outputs;
     }
 
-    private static boolean inputFluidsToBasin(BasinBlockEntity basin, FluidStack fluidStack) {
+    private static void inputFluidsToBasin(BasinBlockEntity basin, FluidStack fluidStack) {
         Level level = basin.getLevel();
-        if (level == null) return false;
+        if (level == null) return;
         IFluidHandler basinFluidHandler = level.getCapability(Capabilities.FluidHandler.BLOCK, basin.getBlockPos(), null);
-        if (basinFluidHandler == null) return false;
+        if (basinFluidHandler == null) return;
 
-        int filled = basinFluidHandler.fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
-
-        // Sync after modifying the basin's fluid contents
-        if (filled == fluidStack.getAmount()) {
-            basin.setChanged();
-            basin.sendData();
-        }
-
-        return filled == fluidStack.getAmount();
+        basinFluidHandler.fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
     }
 
     protected DeepFryingRecipe(IRecipeTypeInfo type, ProcessingRecipeParams params) {
@@ -227,7 +198,6 @@ public class DeepFryingRecipe extends BasinRecipe {
         if (input.isEmpty())
             return false;
 
-        // You can get the first item via input.getItems().get(0)
         return ingredients.getFirst().test(input.getItem(0));
     }
 }
