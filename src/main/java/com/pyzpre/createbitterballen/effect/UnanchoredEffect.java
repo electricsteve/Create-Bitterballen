@@ -27,43 +27,37 @@ public class UnanchoredEffect extends MobEffect {
 
     @Override
     public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-        if (!entity.level().isClientSide) {
-            if (--cooldown <= 0) {
-                if (RANDOM.nextInt(100) < 20) {
-                    for (int i = 0; i < 10; i++) {
-                        double dX = entity.getX() + (RANDOM.nextDouble() - 0.5) * 2 * 20;
-                        double dZ = entity.getZ() + (RANDOM.nextDouble() - 0.5) * 2 * 20;
-                        double dY = entity.getY() + RANDOM.nextInt(7) - 3;
+        if (entity.level().isClientSide) return true;
+        if (--cooldown > 0) return true;
+        if (RANDOM.nextInt(100) >= 20) return true;
+        for (int i = 0; i < 10; i++) {
+            double dX = entity.getX() + (RANDOM.nextDouble() - 0.5) * 2 * 20;
+            double dZ = entity.getZ() + (RANDOM.nextDouble() - 0.5) * 2 * 20;
+            double dY = entity.getY() + RANDOM.nextInt(7) - 3;
 
-                        if (isTeleportDestinationSafe(entity, dX, dY, dZ)) {
-                            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0F, 1.0F);
-                            BlockPos newPos = new BlockPos((int) dX, (int) dY, (int) dZ);
-                            spawnParticles(entity.level(), newPos);
-                            entity.teleportTo(dX, dY, dZ);
-                            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0F, 1.0F);
-                            spawnParticles(entity.level(), newPos);
-
-                            cooldown = MIN_COOLDOWN;
-                            break;
-                        }
-                    }
-                }
-            }
+            if (!isTeleportDestinationSafe(entity, dX, dY, dZ)) continue;
+            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0F, 1.0F);
+            BlockPos newPos = new BlockPos((int) dX, (int) dY, (int) dZ);
+            spawnParticles(entity.level(), newPos);
+            entity.teleportTo(dX, dY, dZ);
+            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0F, 1.0F);
+            spawnParticles(entity.level(), newPos);
+            cooldown = MIN_COOLDOWN;
+            break;
         }
         return true;
     }
 
     private void spawnParticles(Level world, BlockPos pos) {
-        if (world instanceof ServerLevel serverWorld) {
-            for (int i = 0; i < 20; i++) {
-                double d0 = serverWorld.random.nextGaussian() * 0.02D;
-                double d1 = serverWorld.random.nextGaussian() * 0.02D;
-                double d2 = serverWorld.random.nextGaussian() * 0.02D;
-                double x = pos.getX() + 0.5 + serverWorld.random.nextGaussian() * 0.5;
-                double y = pos.getY() + 0.6;
-                double z = pos.getZ() + 0.5 + serverWorld.random.nextGaussian() * 0.5;
-                serverWorld.sendParticles(ParticleTypes.PORTAL, x, y, z, 1, d0, d1, d2, 0.0D);
-            }
+        if (!(world instanceof ServerLevel serverWorld)) return;
+        for (int i = 0; i < 20; i++) {
+            double d0 = serverWorld.random.nextGaussian() * 0.02D;
+            double d1 = serverWorld.random.nextGaussian() * 0.02D;
+            double d2 = serverWorld.random.nextGaussian() * 0.02D;
+            double x = pos.getX() + 0.5 + serverWorld.random.nextGaussian() * 0.5;
+            double y = pos.getY() + 0.6;
+            double z = pos.getZ() + 0.5 + serverWorld.random.nextGaussian() * 0.5;
+            serverWorld.sendParticles(ParticleTypes.PORTAL, x, y, z, 1, d0, d1, d2, 0.0D);
         }
     }
 
@@ -78,8 +72,7 @@ public class UnanchoredEffect extends MobEffect {
     }
 
     @Override
-    public void onEffectStarted(LivingEntity entity, int amplifier) {
-    }
+    public void onEffectStarted(LivingEntity entity, int amplifier) {}
 
     private boolean isTeleportDestinationSafe(LivingEntity entity, double x, double y, double z) {
         var destinationPos = new BlockPos((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));

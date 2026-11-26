@@ -27,9 +27,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class HerringEntity extends AbstractSchoolingFish {
-
-    private boolean isSwimming = false;
-
     public int getMaxSchoolSize() {
         return 5;
     }
@@ -44,18 +41,13 @@ public class HerringEntity extends AbstractSchoolingFish {
 
     public HerringEntity(EntityType<? extends AbstractSchoolingFish> entityType, Level world) {
         super(entityType, world);
-
-        this.refreshDimensions(); // Forces recalculation of hitbox size
     }
-
 
     @Override
     protected void registerGoals() {
         super.registerGoals();
         // Random swimming
         this.goalSelector.addGoal(1, new RandomSwimmingGoal(this, 1.0D, 1));
-
-
         // Schooling behavior
         this.goalSelector.addGoal(2, new FollowFlockLeaderGoal(this));
     }
@@ -92,40 +84,18 @@ public class HerringEntity extends AbstractSchoolingFish {
         return SoundEvents.SALMON_HURT;
     }
 
-    @Override
-    public void setPos(double x, double y, double z) {
-        super.setPos(x, y, z);
-
-        // Offset the bounding box
-        double offsetX = 0; // Move left/right
-        double offsetY = 0; // Move up/down
-        double offsetZ = 0.2;  // Small offset in Z
-        this.setBoundingBox(this.getBoundingBox().move(offsetX, offsetY, offsetZ));
-    }
-
-
+    @SuppressWarnings("unused") // We keep the parameters to keep it easily usable for SpawnPlacements.SpawnPredicate
     public static boolean canSpawnHere(EntityType<? extends AbstractSchoolingFish> fish, LevelAccessor world, MobSpawnType spawnReason, BlockPos pos, RandomSource random) {
         return world.getBlockState(pos).getBlock() == Blocks.WATER;
     }
 
     @Override
-    public void tick() {
-        super.tick();
-
-        // Check if the herring is in water and has any meaningful movement
-        this.isSwimming = this.isInWater() && this.getDeltaMovement().lengthSqr() > 0.0001;
+    public void stopFollowing() {
+        if (this.isFollower()) super.stopFollowing();
     }
 
     @Override
-    public void stopFollowing() {
-        if (this.isFollower()) {
-            // Safely clear the follower state
-            super.stopFollowing(); // This calls the superclass method to nullify the leader
-        }
-    }
-
-
     public boolean isSwimming() {
-        return this.isSwimming;
+        return this.isInWater() && this.getDeltaMovement().lengthSqr() > 0.0001;
     }
 }

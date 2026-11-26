@@ -2,6 +2,7 @@ package com.pyzpre.createbitterballen.events;
 
 import static net.minecraft.world.level.block.Block.popResource;
 
+import com.pyzpre.createbitterballen.CreateBitterballen;
 import com.pyzpre.createbitterballen.block.CBSunflowerBlock;
 import com.pyzpre.createbitterballen.index.BlockRegistry;
 
@@ -65,27 +66,10 @@ public class SunflowerInteractionHandler {
 
             world.playSound(null, pos, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, 1.0F);
             if (player instanceof ServerPlayer serverPlayer) {
-                grantAdvancementCriterion(serverPlayer, "create_bic_bit:lawn_defender", "harvested_sunflower");
+                CreateBitterballen.grantAdvancementCriterion(serverPlayer, "create_bic_bit:lawn_defender", "harvested_sunflower");
             }
             event.setCanceled(true);
         }
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static void grantAdvancementCriterion(ServerPlayer player, String advancementID, String criterionKey) {
-        PlayerAdvancements playerAdvancements = player.getAdvancements();
-        ResourceLocation id = ResourceLocation.parse(advancementID);
-
-        Optional<AdvancementHolder> optionalHolder = Optional.ofNullable(player.server.getAdvancements().get(id));
-
-        optionalHolder.ifPresent(holder -> {
-            if (holder.value().criteria().containsKey(criterionKey)) {
-                AdvancementProgress progress = playerAdvancements.getOrStartProgress(holder);
-                if (!progress.isDone()) {
-                    playerAdvancements.award(holder, criterionKey);
-                }
-            }
-        });
     }
 
     private static void dropSunflowerHead(Level world, BlockPos pos, Player player) {

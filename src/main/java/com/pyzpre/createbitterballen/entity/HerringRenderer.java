@@ -4,6 +4,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 
+import org.jetbrains.annotations.NotNull;
+
 public class HerringRenderer extends MobRenderer<HerringEntity, HerringModel<HerringEntity>> {
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath("create_bic_bit", "textures/entity/herring.png");
 
@@ -12,7 +14,7 @@ public class HerringRenderer extends MobRenderer<HerringEntity, HerringModel<Her
     }
 
     @Override
-    public ResourceLocation getTextureLocation(HerringEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull HerringEntity entity) {
         return TEXTURE;
     }
 }

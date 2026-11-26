@@ -38,34 +38,55 @@ public class HerringModel<T extends Entity> extends EntityModel<T> {
         this.HerringBody = root.getChild("HerringBody");
     }
 
+    @SuppressWarnings("unused") // Part definitions should be kept, with names for convenience
     public static LayerDefinition createBodyLayer() {
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
 
-        PartDefinition HerringBackBody = partdefinition.addOrReplaceChild("HerringBackBody", CubeListBuilder.create().texOffs(20, 10).addBox(-0.5F, -2.0F, 0.0005F, 1.0F, 4.0F, 1.0F, new CubeDeformation(0.0F)), PartPose.offset(-0.5F, 23.0F, 12.0F));
-
-        PartDefinition HerringBackFins = partdefinition.addOrReplaceChild("HerringBackFins", CubeListBuilder.create().texOffs(22, 24).addBox(0.0F, -1.5F, 1.0015F, 0.0F, 3.0F, 1.0F, new CubeDeformation(0.0F))
-            .texOffs(24, 24).addBox(0.0F, 0.5F, 2.0015F, 0.0F, 2.0F, 1.0F, new CubeDeformation(0.0F))
-            .texOffs(26, 15).addBox(0.0F, -2.5F, 2.0015F, 0.0F, 2.0F, 1.0F, new CubeDeformation(0.0F)), PartPose.offset(-0.5F, 23.0F, 12.0F));
-
-        PartDefinition HerringBodyBack = partdefinition.addOrReplaceChild("HerringBodyBack", CubeListBuilder.create().texOffs(0, 10).addBox(-1.5F, 1.0F, 0.0F, 3.0F, 1.0F, 7.0F, new CubeDeformation(0.0F))
-            .texOffs(0, 0).addBox(-1.5F, -2.0F, 0.0F, 3.0F, 3.0F, 7.0F, new CubeDeformation(0.0F))
-            .texOffs(20, 0).addBox(0.0F, -3.0F, 0.0F, 0.0F, 1.0F, 4.0F, new CubeDeformation(0.0F))
-            .texOffs(18, 24).addBox(0.0F, 2.0F, 1.0F, 0.0F, 1.0F, 2.0F, new CubeDeformation(0.0F))
-            .texOffs(24, 12).addBox(0.0F, -4.0F, 1.0F, 0.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(-0.5F, 23.0F, 5.0F));
-
-        PartDefinition HerringBody = partdefinition.addOrReplaceChild("HerringBody", CubeListBuilder.create().texOffs(0, 18).addBox(-1.5F, -2.0F, -7.0F, 3.0F, 3.0F, 6.0F, new CubeDeformation(0.0F))
-            .texOffs(18, 18).addBox(-1.5F, 1.0F, -6.0F, 3.0F, 1.0F, 5.0F, new CubeDeformation(0.0F))
-            .texOffs(20, 5).addBox(-1.0F, -2.0F, -9.0F, 2.0F, 3.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(-0.5F, 23.0F, 6.0F));
-
-        PartDefinition HerringFinLeft_r1 = HerringBody.addOrReplaceChild("HerringFinLeft_r1", CubeListBuilder.create().texOffs(24, 10).addBox(0.0F, 0.0F, -1.0F, 1.0F, 0.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-1.5F, 1.0F, -5.0F, 0.0F, 0.0F, 2.5307F));
-
-        PartDefinition HerringFinRight_r1 = HerringBody.addOrReplaceChild("HerringFinRight_r1", CubeListBuilder.create().texOffs(20, 15).addBox(0.0F, 0.0F, -1.0F, 1.0F, 0.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(1.5F, 1.0F, -5.0F, 0.0F, 0.0F, 0.7854F));
+        CubeDeformation cubeDeformation = new CubeDeformation(0.0F);
+        PartDefinition HerringBackBody = partdefinition.addOrReplaceChild("HerringBackBody", CubeListBuilder.create()
+                .texOffs(20, 10)
+                .addBox(-0.5F, -2.0F, 0.0005F, 1.0F, 4.0F, 1.0F, cubeDeformation),
+            PartPose.offset(-0.5F, 23.0F, 12.0F));
+        PartDefinition HerringBackFins = partdefinition.addOrReplaceChild("HerringBackFins", CubeListBuilder.create()
+                .texOffs(22, 24)
+                .addBox(0.0F, -1.5F, 1.0015F, 0.0F, 3.0F, 1.0F, cubeDeformation)
+                .texOffs(24, 24)
+                .addBox(0.0F, 0.5F, 2.0015F, 0.0F, 2.0F, 1.0F, cubeDeformation)
+                .texOffs(26, 15)
+                .addBox(0.0F, -2.5F, 2.0015F, 0.0F, 2.0F, 1.0F, cubeDeformation),
+            PartPose.offset(-0.5F, 23.0F, 12.0F));
+        PartDefinition HerringBodyBack = partdefinition.addOrReplaceChild("HerringBodyBack", CubeListBuilder.create()
+                .texOffs(0, 10)
+                .addBox(-1.5F, 1.0F, 0.0F, 3.0F, 1.0F, 7.0F, cubeDeformation)
+                .texOffs(0, 0)
+                .addBox(-1.5F, -2.0F, 0.0F, 3.0F, 3.0F, 7.0F, cubeDeformation)
+                .texOffs(20, 0)
+                .addBox(0.0F, -3.0F, 0.0F, 0.0F, 1.0F, 4.0F, cubeDeformation)
+                .texOffs(18, 24)
+                .addBox(0.0F, 2.0F, 1.0F, 0.0F, 1.0F, 2.0F, cubeDeformation)
+                .texOffs(24, 12)
+                .addBox(0.0F, -4.0F, 1.0F, 0.0F, 1.0F, 2.0F, cubeDeformation),
+            PartPose.offset(-0.5F, 23.0F, 5.0F));
+        PartDefinition HerringBody = partdefinition.addOrReplaceChild("HerringBody", CubeListBuilder.create()
+                .texOffs(0, 18)
+                .addBox(-1.5F, -2.0F, -7.0F, 3.0F, 3.0F, 6.0F, cubeDeformation)
+                .texOffs(18, 18)
+                .addBox(-1.5F, 1.0F, -6.0F, 3.0F, 1.0F, 5.0F, cubeDeformation)
+                .texOffs(20, 5)
+                .addBox(-1.0F, -2.0F, -9.0F, 2.0F, 3.0F, 2.0F, cubeDeformation),
+            PartPose.offset(-0.5F, 23.0F, 6.0F));
+        PartDefinition HerringFinLeft_r1 = HerringBody.addOrReplaceChild("HerringFinLeft_r1", CubeListBuilder.create()
+                .texOffs(24, 10)
+                .addBox(0.0F, 0.0F, -1.0F, 1.0F, 0.0F, 2.0F, cubeDeformation),
+            PartPose.offsetAndRotation(-1.5F, 1.0F, -5.0F, 0.0F, 0.0F, 2.5307F));
+        PartDefinition HerringFinRight_r1 = HerringBody.addOrReplaceChild("HerringFinRight_r1", CubeListBuilder.create()
+                .texOffs(20, 15)
+                .addBox(0.0F, 0.0F, -1.0F, 1.0F, 0.0F, 2.0F, cubeDeformation),
+            PartPose.offsetAndRotation(1.5F, 1.0F, -5.0F, 0.0F, 0.0F, 0.7854F));
 
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
     public void setupAnim(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {

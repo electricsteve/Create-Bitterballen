@@ -1,9 +1,7 @@
 package com.pyzpre.createbitterballen.effect;
 
-import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.advancements.AdvancementProgress;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.PlayerAdvancements;
+import com.pyzpre.createbitterballen.CreateBitterballen;
+
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
@@ -17,7 +15,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.Optional;
 import java.util.Random;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -41,14 +38,9 @@ public class OiledUpEffect extends MobEffect {
 
         // Level 1+: Sliding + Dropping Items + Floating in Rain + Falling off Ladders
         if (amplifier >= 1) {
-            if (entity instanceof Player player) {
-                maybeDropHeldItem(player, amplifier); // Apply the new level-based drop logic for players
-            }
+            if (entity instanceof Player player) maybeDropHeldItem(player, amplifier);
             maybeFallOffLadder(entity);
-
-            if (world.isRaining()) {
-                applyLevitationEffect(entity);
-            }
+            if (world.isRaining()) applyLevitationEffect(entity);
         }
         return true;
     }
@@ -81,28 +73,9 @@ public class OiledUpEffect extends MobEffect {
         entity.addEffect(levitation);
 
         // Only grant the advancement criterion if the entity is a player
-        if (entity instanceof ServerPlayer serverPlayer) {
-            grantAdvancementCriterion(serverPlayer, "create_bic_bit:step_3", "got_levitation");
-        }
+        if (entity instanceof ServerPlayer serverPlayer)
+            CreateBitterballen.grantAdvancementCriterion(serverPlayer, "create_bic_bit:step_3", "got_levitation");
     }
-
-    @SuppressWarnings("SameParameterValue")
-    private void grantAdvancementCriterion(ServerPlayer player, String advancementID, String criterionKey) {
-        PlayerAdvancements playerAdvancements = player.getAdvancements();
-        ResourceLocation id = ResourceLocation.parse(advancementID);
-
-        Optional<AdvancementHolder> optionalHolder = Optional.ofNullable(player.server.getAdvancements().get(id));
-
-        optionalHolder.ifPresent(holder -> {
-            if (holder.value().criteria().containsKey(criterionKey)) {
-                AdvancementProgress progress = playerAdvancements.getOrStartProgress(holder);
-                if (!progress.isDone()) {
-                    playerAdvancements.award(holder, criterionKey);
-                }
-            }
-        });
-    }
-
 
     private void maybeFallOffLadder(LivingEntity entity) {
         // Check if the block at the entity's feet or the block they are moving into is a ladder
@@ -110,7 +83,6 @@ public class OiledUpEffect extends MobEffect {
             entity.level().getBlockState(entity.blockPosition().above()).is(BlockTags.CLIMBABLE);
 
         if (isOnLadder && random.nextDouble() < FALL_OFF_LADDER_CHANCE) {
-            // Get the entity's facing direction
             Vec3 lookVector = entity.getLookAngle();
             // Apply a force opposite to the look direction (negating the vector), but only affecting the X and Z axes (horizontal push)
             Vec3 pushVector = new Vec3(-lookVector.x, 0, -lookVector.z).normalize().scale(0.15); // Scale determines the strength of the push
@@ -131,5 +103,4 @@ public class OiledUpEffect extends MobEffect {
     @Override
     public void onEffectStarted(LivingEntity entity, int amplifier) {
     }
-
 }

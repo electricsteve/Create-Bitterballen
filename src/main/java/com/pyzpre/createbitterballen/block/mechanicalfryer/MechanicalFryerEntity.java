@@ -1,5 +1,6 @@
 package com.pyzpre.createbitterballen.block.mechanicalfryer;
 
+import com.pyzpre.createbitterballen.CreateBitterballen;
 import com.pyzpre.createbitterballen.index.BlockEntityRegistry;
 import com.pyzpre.createbitterballen.index.RecipeRegistry;
 import com.pyzpre.createbitterballen.index.SoundsRegistry;
@@ -338,18 +339,6 @@ public class MechanicalFryerEntity extends FryerOperatingBlockEntity {
         runningTicks = 0;
     }
 
-    @SuppressWarnings("SameParameterValue")
-    private static void grantAdvancementCriterion(ServerPlayer player, String advancementID, String criterionKey) {
-        PlayerAdvancements playerAdvancements = player.getAdvancements();
-        ResourceLocation id = ResourceLocation.parse(advancementID);
-
-        net.minecraft.advancements.AdvancementHolder holder = player.server.getAdvancements().get(id);
-        if (holder != null && holder.value().criteria().containsKey(criterionKey)) {
-            AdvancementProgress progress = playerAdvancements.getOrStartProgress(holder);
-            if (!progress.isDone()) playerAdvancements.award(holder, criterionKey);
-        }
-    }
-
     private void causeExplosion() {
         if (level != null && !level.isClientSide()) {
             level.explode(null, worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5, 4.0F, false, Level.ExplosionInteraction.MOB);
@@ -357,7 +346,7 @@ public class MechanicalFryerEntity extends FryerOperatingBlockEntity {
             AABB area = new AABB(worldPosition).inflate(radius);
             List<ServerPlayer> players = level.getEntitiesOfClass(ServerPlayer.class, area);
             for (ServerPlayer player : players) {
-                grantAdvancementCriterion(player, "create_bic_bit:fry_about_it", "ice_exploded");
+                CreateBitterballen.grantAdvancementCriterion(player, "create_bic_bit:fry_about_it", "ice_exploded");
             }
         }
     }

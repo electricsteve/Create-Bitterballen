@@ -48,9 +48,7 @@ public class CBLootTableProvider extends LootTableProvider {
     }
 
     public static class Cheese implements LootTableSubProvider {
-        public Cheese(HolderLookup.Provider lookupProvider) {
-//            super(lookupProvider);
-        }
+        public Cheese(HolderLookup.Provider lookupProvider) {}
 
         @Override
         public void generate(@NotNull BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output) {
