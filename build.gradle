@@ -17,6 +17,7 @@ repositories {
     maven { url = "https://maven.ithundxr.dev/snapshots" } // Registrate
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" } // ForgeConfigAPIPort
     maven {url = "https://www.cursemaven.com/"}
+    maven { url = "https://maven.blamejared.com/" } // JEI
     exclusiveContent {
         forRepository {
             maven {
@@ -102,7 +103,9 @@ dependencies {
     runtimeOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
     implementation("com.tterrag.registrate:Registrate:${registrate_version}")
 
-    implementation "curse.maven:jei-238222:5846880" //JEI
+    compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
+    localRuntime("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+
     implementation "curse.maven:jade-324717:6291517" //Jade
     implementation "curse.maven:appleskin-248787:5586600" //Appleskin
     implementation "curse.maven:farmers-delight-398521:6154807" //Farmer's delight

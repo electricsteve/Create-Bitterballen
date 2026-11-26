@@ -37,7 +37,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 public class FryingCategory extends CreateRecipeCategory<DeepFryingRecipe> {
 
     private final AnimatedFryer fryer = new AnimatedFryer();
-    private final AnimatedBlazeBurner heater = new AnimatedBlazeBurner();
+    private final AnimatedBlazeBurner blazeBurner = new AnimatedBlazeBurner();
     FryingType type;
 
     @Override
@@ -93,16 +93,12 @@ public class FryingCategory extends CreateRecipeCategory<DeepFryingRecipe> {
         }
 
         HeatCondition requiredHeat = recipe.getRequiredHeat();
-        if (!requiredHeat.testBlazeBurner(BlazeBurnerBlock.HeatLevel.NONE)) {
-            builder
-                .addSlot(RecipeIngredientRole.RENDER_ONLY, 134, 81)
-                .addItemStack(AllBlocks.BLAZE_BURNER.asStack());
-        }
-        if (!requiredHeat.testBlazeBurner(BlazeBurnerBlock.HeatLevel.KINDLED)) {
-            builder
-                .addSlot(RecipeIngredientRole.CATALYST, 153, 81)
-                .addItemStack(AllItems.BLAZE_CAKE.asStack());
-        }
+        if (!requiredHeat.testBlazeBurner(BlazeBurnerBlock.HeatLevel.NONE)) builder
+            .addSlot(RecipeIngredientRole.RENDER_ONLY, 134, 81)
+            .addItemStack(AllBlocks.BLAZE_BURNER.asStack());
+        if (!requiredHeat.testBlazeBurner(BlazeBurnerBlock.HeatLevel.KINDLED)) builder
+            .addSlot(RecipeIngredientRole.CATALYST, 153, 81)
+            .addItemStack(AllItems.BLAZE_CAKE.asStack());
     }
 
     public enum FryingType {
@@ -119,38 +115,24 @@ public class FryingCategory extends CreateRecipeCategory<DeepFryingRecipe> {
     }
 
     @Override
-    public void draw(DeepFryingRecipe recipe,
-                     IRecipeSlotsView slots,
-                     GuiGraphics graphics,
-                     double mouseX, double mouseY) {
-
+    public void draw(DeepFryingRecipe recipe, IRecipeSlotsView slots, GuiGraphics graphics, double mouseX, double mouseY) {
         HeatCondition requiredHeat = recipe.getRequiredHeat();
         boolean noHeat = requiredHeat == HeatCondition.NONE;
 
-        /* ── your original rendering code ─────────────────────────── */
-        int vRows = (1 + recipe.getFluidResults().size()
-            + recipe.getRollableResults().size()) / 2;
-        if (vRows <= 2)
-            AllGuiTextures.JEI_DOWN_ARROW.render(graphics,
-                136,
-                -19 * (vRows - 1) + 32);
+        int vRows = (1 + recipe.getFluidResults().size() + recipe.getRollableResults().size()) / 2;
+        if (vRows <= 2) AllGuiTextures.JEI_DOWN_ARROW.render(graphics, 136, -19 * (vRows - 1) + 32);
 
-        AllGuiTextures shadow = noHeat ? AllGuiTextures.JEI_SHADOW
-            : AllGuiTextures.JEI_LIGHT;
+        AllGuiTextures shadow = noHeat ? AllGuiTextures.JEI_SHADOW : AllGuiTextures.JEI_LIGHT;
         shadow.render(graphics, 81, 58 + (noHeat ? 10 : 30));
 
-        AllGuiTextures heatBar = noHeat ? AllGuiTextures.JEI_NO_HEAT_BAR
-            : AllGuiTextures.JEI_HEAT_BAR;
+        AllGuiTextures heatBar = noHeat ? AllGuiTextures.JEI_NO_HEAT_BAR : AllGuiTextures.JEI_HEAT_BAR;
         heatBar.render(graphics, 4, 80);
 
-        graphics.drawString(Minecraft.getInstance().font,
-            CreateLang.translateDirect(requiredHeat.getTranslationKey()),
+        graphics.drawString(Minecraft.getInstance().font, CreateLang.translateDirect(requiredHeat.getTranslationKey()),
             9, 86, requiredHeat.getColor(), false);
 
-        if (!noHeat)
-            heater.withHeat(requiredHeat.visualizeAsBlazeBurner())
+        if (!noHeat) blazeBurner.withHeat(requiredHeat.visualizeAsBlazeBurner())
                 .draw(graphics, getBackground().getWidth() / 2 + 3, 55);
-
         fryer.draw(graphics, getBackground().getWidth() / 2 + 3, 34);
     }
 }
