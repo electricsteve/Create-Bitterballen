@@ -15,6 +15,5 @@ public class BlockEntityRegistry {
             .renderer(() -> MechanicalFryerRenderer::new)
             .register();
 
-    public static void register() {
-    }
+    public static void register() {}
 }

@@ -90,7 +90,7 @@ public class CreateBitterballenTabs {
         output.accept(ItemRegistry.UNRIPE_CHEESE_WEDGE.get());
         output.accept(ItemRegistry.YOUNG_CHEESE_WEDGE.get());
         output.accept(ItemRegistry.AGED_CHEESE_WEDGE.get());
-        output.accept(ItemRegistry.CRUSHED_NETHERWART.get());
+        output.accept(ItemRegistry.CRUSHED_NETHER_WART.get());
         output.accept(ItemRegistry.KETCHUP_BOTTLE.get());
         output.accept(ItemRegistry.MAYONNAISE_BOTTLE.get());
         output.accept(FluidRegistry.KETCHUP.getBucket().get());

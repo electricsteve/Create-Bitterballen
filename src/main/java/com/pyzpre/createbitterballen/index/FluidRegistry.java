@@ -34,10 +34,10 @@ import java.util.function.Supplier;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 public class FluidRegistry {
+    private static final Supplier<Float> fogDistance = () -> 1f / 8f;
+
     public static final FluidEntry<BaseFlowingFluid.Flowing.Flowing> FRYING_OIL =
-        REGISTRATE.standardFluid("frying_oil",
-                TransparentRenderedPlaceableFluidType.create(0xEDC483,
-                    () -> 1f / 8f))
+        REGISTRATE.standardFluid("frying_oil", TransparentRenderedPlaceableFluidType.create(0xEDC483, fogDistance))
             .lang("Frying Oil")
             .properties(b -> b
                 .viscosity(1500)
@@ -54,27 +54,24 @@ public class FluidRegistry {
             .register();
 
     public static final FluidEntry<BaseFlowingFluid.Flowing> KETCHUP =
-        REGISTRATE.standardFluid("ketchup",
-                SolidRenderedPlaceableFluidType.create(0x9B1C1D,
-                    () -> 1f / 8f))
-            .lang("Ketchup")
-            .properties(b -> b
-                .viscosity(1500)
-                .density(1400))
-            .fluidProperties(p -> p
-                .levelDecreasePerBlock(2)
-                .tickRate(25)
-                .slopeFindDistance(3)
-                .explosionResistance(100f))
-            .source(BaseFlowingFluid.Source::new)
-            .bucket()
-            .tag(AllTags.AllItemTags.UPRIGHT_ON_BELT.tag)
-            .build()
-            .register();
+        REGISTRATE.standardFluid("ketchup", SolidRenderedPlaceableFluidType.create(0x9B1C1D, fogDistance))
+        .lang("Ketchup")
+        .properties(b -> b
+            .viscosity(1500)
+            .density(1400))
+        .fluidProperties(p -> p
+            .levelDecreasePerBlock(2)
+            .tickRate(25)
+            .slopeFindDistance(3)
+            .explosionResistance(100f))
+        .source(BaseFlowingFluid.Source::new)
+        .bucket()
+        .tag(AllTags.AllItemTags.UPRIGHT_ON_BELT.tag)
+        .build()
+        .register();
+
     public static final FluidEntry<BaseFlowingFluid.Flowing> MAYONNAISE =
-        REGISTRATE.standardFluid("mayonnaise",
-                SolidRenderedPlaceableFluidType.create(0xC9C79C,
-                    () -> 1f / 8f))
+        REGISTRATE.standardFluid("mayonnaise", SolidRenderedPlaceableFluidType.create(0xC9C79C, fogDistance))
             .lang("Mayonnaise")
             .properties(b -> b
                 .viscosity(1500)
@@ -90,9 +87,7 @@ public class FluidRegistry {
             .build()
             .register();
     public static final FluidEntry<BaseFlowingFluid.Flowing> CURDLED_MILK =
-        REGISTRATE.standardFluid("curdled_milk",
-                SolidRenderedPlaceableFluidType.create(0xC9C79C,
-                    () -> 1f / 8f))
+        REGISTRATE.standardFluid("curdled_milk", SolidRenderedPlaceableFluidType.create(0xC9C79C, fogDistance))
             .lang("Curdled Milk")
             .properties(b -> b
                 .viscosity(1500)
@@ -107,30 +102,22 @@ public class FluidRegistry {
             .tag(AllTags.AllItemTags.UPRIGHT_ON_BELT.tag)
             .build()
             .register();
-    public static final FluidEntry<VirtualFluid> STAMPPOT =
-        REGISTRATE.virtualFluid("stamppot")
+    @SuppressWarnings("unused")
+    public static final FluidEntry<VirtualFluid> STAMPPOT = REGISTRATE.virtualFluid("stamppot")
             .lang("Stamppot")
             .register();
 
-    public static void register() {
-    }
+    public static void register() {}
 
     public static void registerFluidInteractions() {
         FluidInteractionRegistry.addInteraction(NeoForgeMod.LAVA_TYPE.value(), new FluidInteractionRegistry.InteractionInformation(
             FRYING_OIL.get().getFluidType(),
-            fluidState -> {
-                if (fluidState.isSource()) {
-                    return Blocks.OBSIDIAN.defaultBlockState();
-                } else {
-                    return BlockRegistry.CRYSTALLISED_OIL.get()
-                        .defaultBlockState();
-                }
-            }
+            fluidState -> fluidState.isSource() ?
+                Blocks.OBSIDIAN.defaultBlockState() : BlockRegistry.CRYSTALLISED_OIL.get().defaultBlockState()
         ));
     }
 
     public static abstract class TintedFluidType extends FluidType {
-
         protected static final int NO_TINT = 0xffffffff;
         private final ResourceLocation stillTexture;
         private final ResourceLocation flowingTexture;

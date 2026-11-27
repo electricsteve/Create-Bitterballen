@@ -5,7 +5,7 @@ import static net.neoforged.neoforge.common.NeoForge.EVENT_BUS;
 import com.pyzpre.createbitterballen.block.mechanicalfryer.MechanicalFryerEntity;
 import com.pyzpre.createbitterballen.datagen.CBLootTableProvider;
 import com.pyzpre.createbitterballen.events.EntityEffectHandler;
-import com.pyzpre.createbitterballen.events.LootTables;
+import com.pyzpre.createbitterballen.events.LootTableInjections;
 import com.pyzpre.createbitterballen.events.SunflowerInteractionHandler;
 import com.pyzpre.createbitterballen.index.BlockEntityRegistry;
 import com.pyzpre.createbitterballen.index.BlockRegistry;
@@ -16,7 +16,7 @@ import com.pyzpre.createbitterballen.index.ItemRegistry;
 import com.pyzpre.createbitterballen.index.PartialsRegistry;
 import com.pyzpre.createbitterballen.index.RecipeRegistry;
 import com.pyzpre.createbitterballen.index.SoundsRegistry;
-import com.pyzpre.createbitterballen.ponder.BitterOrbPonderPlugin;
+import com.pyzpre.createbitterballen.ponder.CBPonderPlugin;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.ItemDescription;
 import com.simibubi.create.foundation.item.KineticStats;
@@ -50,10 +50,8 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 @Mod(CreateBitterballen.MOD_ID)
@@ -80,7 +78,7 @@ public class CreateBitterballen {
         BlockEntityRegistry.register();
         EVENT_BUS.register(new EntityEffectHandler());
         ItemRegistry.register();
-        LootTables.register();
+        LootTableInjections.register();
         EffectRegistry.register(eventBus);
         CreateBitterballenTabs.register(eventBus);
         RecipeRegistry.register(eventBus);
@@ -109,7 +107,7 @@ public class CreateBitterballen {
         ItemBlockRenderTypes.setRenderLayer(FluidRegistry.FRYING_OIL.get(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(FluidRegistry.FRYING_OIL.getSource(), RenderType.translucent());
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.CRYSTALLISED_OIL.get(), RenderType.translucent());
-        PonderIndex.addPlugin(new BitterOrbPonderPlugin());
+        PonderIndex.addPlugin(new CBPonderPlugin());
     }
 
     public static ResourceLocation asResource(String path) {

@@ -22,21 +22,6 @@ public class BottleItem extends Item {
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack itemstack, Level world, LivingEntity entity) {
-        ItemStack retval = new ItemStack(Items.GLASS_BOTTLE);
-        super.finishUsingItem(itemstack, world, entity);
-        if (itemstack.isEmpty()) {
-            return retval;
-        } else {
-            if (entity instanceof Player player && !player.getAbilities().instabuild) {
-                if (!player.getInventory().add(retval))
-                    player.drop(retval, false);
-            }
-            return itemstack;
-        }
-    }
-
-    @Override
     public int getUseDuration(ItemStack itemStack, LivingEntity entity) {
         return 42;
     }

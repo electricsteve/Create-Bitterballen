@@ -48,17 +48,14 @@ public class FryerScenes {
         BlockPos fryer = util.grid().at(1, 4, 2);
         Selection fryerSelection = util.select().position(fryer);
         Vec3 basinSide = util.vector().blockSurface(basin, Direction.WEST);
-
         ItemStack oil = new ItemStack(FluidRegistry.FRYING_OIL.getBucket().get());
         ItemStack raw = new ItemStack(ItemRegistry.RAW_BITTERBALLEN.get());
         ItemStack fried = new ItemStack(ItemRegistry.BITTERBALLEN.get());
-
         scene.overlay().showText(60)
             .pointAt(basinSide)
             .placeNearTarget()
             .text("With a Fryer and a Basin, some foods can be deep fried");
         scene.idle(70);
-
         scene.overlay().showControls(util.vector().topOf(basin), Pointing.RIGHT, 80).withItem(oil);
         scene.overlay().showText(80)
             .pointAt(basinSide)
@@ -66,8 +63,6 @@ public class FryerScenes {
             .attachKeyFrame()
             .text("Fill the Basin with Frying Oil");
         scene.idle(90);
-
-
         scene.overlay().showText(80)
             .pointAt(basinSide.subtract(0, 1, 0))
             .placeNearTarget()
@@ -92,24 +87,17 @@ public class FryerScenes {
                 )
             );
         });
-
         scene.idle(20);
-
         scene.world().modifyBlockEntityNBT(fryerSelection, type, nbt -> {
             CompoundTag emptyTag = ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, ItemStack.EMPTY)
                 .result()
                 .filter(t -> t instanceof CompoundTag)
                 .map(t -> (CompoundTag) t)
                 .orElse(new CompoundTag());
-
             nbt.put("OutputInventory", emptyTag);
         });
-
-
         scene.world().createItemOnBelt(util.grid().at(2, 3, 2), Direction.UP, fried);
         scene.idle(30);
-
-
         scene.idle(80);
     }
 }

@@ -9,17 +9,15 @@ import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BitterOrbPonderPlugin implements PonderPlugin {
+public class CBPonderPlugin implements PonderPlugin {
 
     @Override
     public @NotNull String getModId() {
-        return CreateBitterballen.MOD_ID; // Your mod's ID
+        return CreateBitterballen.MOD_ID;
     }
 
     @Override
     public void registerScenes(@NotNull PonderSceneRegistrationHelper<ResourceLocation> helper) {
-        // Your scene registrations
         PonderIndex.register(helper);
     }
-
 }

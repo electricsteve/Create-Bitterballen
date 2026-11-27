@@ -10,12 +10,12 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
 
-public class LootTables {
+public class LootTableInjections {
 
     private static final ResourceLocation FISHING_FISH = ResourceLocation.fromNamespaceAndPath("minecraft", "gameplay/fishing/fish");
 
     public static void register() {
-        NeoForge.EVENT_BUS.addListener(LootTables::onLootTableLoad);
+        NeoForge.EVENT_BUS.addListener(LootTableInjections::onLootTableLoad);
     }
 
     public static void onLootTableLoad(LootTableLoadEvent event) {

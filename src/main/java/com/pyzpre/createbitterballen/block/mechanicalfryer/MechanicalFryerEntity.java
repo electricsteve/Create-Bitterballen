@@ -555,7 +555,7 @@ public class MechanicalFryerEntity extends FryerOperatingBlockEntity {
         if (lastRecipe != null && isItemValidForRecipe(lastRecipe, stack)) return true;
 
         List<DeepFryingRecipe> recipes = level.getRecipeManager()
-            .getAllRecipesFor(RecipeRegistry.DEEP_FRYING.get())
+            .getAllRecipesFor(RecipeRegistry.DEEP_FRYING.getType())
             .stream()
             .map(RecipeHolder::value)
             .toList();

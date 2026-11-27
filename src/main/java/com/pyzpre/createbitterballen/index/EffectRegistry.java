@@ -17,7 +17,6 @@ public class EffectRegistry {
 
     public static final DeferredHolder<MobEffect, UnanchoredEffect> UNANCHORED =
         MOB_EFFECTS.register("unanchored", () -> new UnanchoredEffect(MobEffectCategory.NEUTRAL, 800000980));
-
     public static final DeferredHolder<MobEffect, OiledUpEffect> OILED_UP =
         MOB_EFFECTS.register("oiled_up", () -> new OiledUpEffect(MobEffectCategory.NEUTRAL, 15249764));
 

@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class SunflowerMixin {
     @Inject(method = "useOn", at = @At("HEAD"), cancellable = true)
     private void onUseOn(UseOnContext context, CallbackInfoReturnable<InteractionResult> cir) {
-
         ItemStack itemStack = context.getItemInHand();
         if (itemStack.getItem() == Items.SUNFLOWER) {
             cir.setReturnValue(InteractionResult.FAIL);

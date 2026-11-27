@@ -5,13 +5,11 @@ import com.pyzpre.createbitterballen.block.mechanicalfryer.DeepFryingRecipe;
 import com.pyzpre.createbitterballen.block.mechanicalfryer.DeepFryingRecipeSerializer;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 
-import net.createmod.catnip.lang.Lang;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.bus.api.IEventBus;
@@ -22,55 +20,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
-public enum RecipeRegistry implements IRecipeTypeInfo, StringRepresentable {
-    DEEP_FRYING(() -> DeepFryingRecipeSerializer.INSTANCE);
-
-    public final ResourceLocation id;
-    private final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> serializerObject;
-    private final Supplier<RecipeType<?>> type;
-
-    RecipeRegistry(Supplier<RecipeSerializer<?>> serializerSupplier) {
-        String name = Lang.asId(name());
-        id = CreateBitterballen.asResource(name);
-
-        // register your custom serializer
-        serializerObject = Registers.SERIALIZER_REGISTER.register(name, serializerSupplier);
-
-        // register the recipe-type so JSON parser knows “create_bic_bit:deep_frying”
-        type = Registers.TYPE_REGISTER.register(name, () -> RecipeType.simple(id));
-    }
+public class RecipeRegistry {
+    public static final CBRecipe<DeepFryingRecipeSerializer, DeepFryingRecipe> DEEP_FRYING =
+        new CBRecipe<>(() -> DeepFryingRecipeSerializer.INSTANCE, "deep_frying");
 
     public static void register(IEventBus modEventBus) {
         Registers.SERIALIZER_REGISTER.register(modEventBus);
         Registers.TYPE_REGISTER.register(modEventBus);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public RecipeSerializer<?> getSerializer() {
-        return serializerObject.get();
-    }
-
-    @Override
-    public <I extends RecipeInput, R extends Recipe<I>> RecipeType<R> getType() {
-        @SuppressWarnings("unchecked")
-        RecipeType<R> t = (RecipeType<R>) type.get();
-        return t;
-    }
-
-    @SuppressWarnings("unchecked")
-    public RecipeType<DeepFryingRecipe> get() {
-        return (RecipeType<DeepFryingRecipe>) type.get();
-    }
-
-    @Override
-    public ResourceLocation getId() {
-        return id;
-    }
-
-    @Override
-    public @NotNull String getSerializedName() {
-        return id.toString();
     }
 
     private static class Registers {
@@ -78,5 +34,38 @@ public enum RecipeRegistry implements IRecipeTypeInfo, StringRepresentable {
             DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, "create_bic_bit");
         static final DeferredRegister<RecipeType<?>> TYPE_REGISTER =
             DeferredRegister.create(Registries.RECIPE_TYPE, "create_bic_bit");
+    }
+
+    @SuppressWarnings("unchecked") // intellij is stupid or smt bro
+    public static class CBRecipe<T extends RecipeSerializer<? extends R>, R extends Recipe<?>> implements IRecipeTypeInfo, StringRepresentable {
+        public final ResourceLocation id;
+        private final DeferredHolder<RecipeSerializer<?>, T> serializerObject;
+        private final Supplier<RecipeType<R>> type;
+
+        public CBRecipe(Supplier<T> serializerSupplier, String name) {
+            id = CreateBitterballen.asResource(name);
+            serializerObject = Registers.SERIALIZER_REGISTER.register(name, serializerSupplier);
+            type = Registers.TYPE_REGISTER.register(name, () -> RecipeType.simple(id));
+        }
+
+        @Override
+        public ResourceLocation getId() {
+            return id;
+        }
+
+        @Override
+        public T getSerializer() {
+            return serializerObject.get();
+        }
+
+        @Override
+        public RecipeType<R> getType() {
+            return type.get();
+        }
+
+        @Override
+        public @NotNull String getSerializedName() {
+            return id.toString();
+        }
     }
 }

@@ -1,6 +1,5 @@
 package com.pyzpre.createbitterballen.index;
 
-
 import com.pyzpre.createbitterballen.CreateBitterballen;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -18,6 +17,5 @@ public class PartialsRegistry {
         return PartialModel.of(CreateBitterballen.asResource("block/" + path));
     }
 
-    public static void init() {
-    }
+    public static void init() {}
 }

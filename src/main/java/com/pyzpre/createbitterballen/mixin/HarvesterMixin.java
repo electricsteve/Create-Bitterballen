@@ -27,7 +27,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = HarvesterMovementBehaviour.class, remap = false)
 public abstract class HarvesterMixin {
-
     @Inject(
         method = "visitNewPosition",
         at = @At(
@@ -37,17 +36,10 @@ public abstract class HarvesterMixin {
         cancellable = true
     )
     private void onVisitNewPosition(MovementContext context, BlockPos pos, CallbackInfo ci) {
-        if (context == null) {
-            return;
-        }
-
+        if (context == null) return;
         Level world = context.world;
-        if (world == null || world.isClientSide()) {
-            return;
-        }
-
+        if (world == null || world.isClientSide()) return;
         BlockState stateVisited = world.getBlockState(pos);
-
         if (stateVisited.is(Blocks.SUNFLOWER)) {
             bitterballen$handleHarvesterInteraction(world, pos, context, stateVisited);
             ci.cancel();
@@ -59,31 +51,21 @@ public abstract class HarvesterMixin {
         ItemStack sunflowerHead = new ItemStack(Items.SUNFLOWER);
 
         IItemHandler internalStorage = null;
-        if (context != null
-            && context.contraption != null
-            && context.contraption.getStorage() != null) {
+        if (context != null && context.contraption != null && context.contraption.getStorage() != null)
             internalStorage = context.contraption.getStorage().getMountedItems();
-        }
 
         if (internalStorage != null) {
             ItemStack remaining = ItemHandlerHelper.insertItem(internalStorage, sunflowerHead, false);
-            if (!remaining.isEmpty()) {
-                Block.popResource(world, pos, remaining);
-            }
-        } else {
-            Block.popResource(world, pos, sunflowerHead);
-        }
+            if (!remaining.isEmpty()) Block.popResource(world, pos, remaining);
+        } else Block.popResource(world, pos, sunflowerHead);
 
         bitterballen$replaceWithSunflowerStem(world, pos, state);
-
         world.playSound(null, pos, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, 1.0F);
     }
 
     @Unique
     private void bitterballen$replaceWithSunflowerStem(Level world, BlockPos pos, BlockState state) {
-        if (!state.hasProperty(DoublePlantBlock.HALF)) {
-            return;
-        }
+        if (!state.hasProperty(DoublePlantBlock.HALF)) return;
 
         DoubleBlockHalf half = state.getValue(DoublePlantBlock.HALF);
         BlockPos lowerPos = half == DoubleBlockHalf.LOWER ? pos : pos.below();

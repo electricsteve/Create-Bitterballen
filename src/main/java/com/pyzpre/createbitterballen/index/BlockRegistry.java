@@ -50,16 +50,14 @@ public class BlockRegistry {
             .model((i1, i2) -> {})
             .build()
             .lang("Sunflower Seeds")
-            .loot((lootTables, block) -> {
-                lootTables.add(block,
-                    LootTable.lootTable().withPool(lootTables.applyExplosionCondition(block,
-                        LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(block))
-                            .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(block).setProperties(
-                                StatePropertiesPredicate.Builder.properties().hasProperty(DoublePlantBlock.HALF, DoubleBlockHalf.LOWER)
-                            )))
-                    )
-                );
-            })
+            .loot((lootTables, block) -> lootTables.add(block,
+                LootTable.lootTable().withPool(lootTables.applyExplosionCondition(block,
+                    LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(block))
+                        .when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(block).setProperties(
+                            StatePropertiesPredicate.Builder.properties().hasProperty(DoublePlantBlock.HALF, DoubleBlockHalf.LOWER)
+                        )))
+                )
+            ))
             .blockstate((i1, i2) -> {})
             .register();
     public static final BlockEntry<CheeseBlock> UNRIPE_CHEESE =
@@ -147,6 +145,5 @@ public class BlockRegistry {
             .lang("Crystallised Oil")
             .register();
 
-    public static void register() {
-    }
+    public static void register() {}
 }
